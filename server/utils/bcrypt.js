@@ -6,8 +6,8 @@ const saltRounds = Number(process.env.SALT_ROUNDS)
 
 export const hashPassword = async (password) => {
     try {
-        const hashPassword = await bcrypt.hash(password, saltRounds)
-        return hashPassword
+        const hashedPassword = await bcrypt.hash(password, saltRounds)
+        return hashedPassword
     } catch (error) {
         console.log(error)
     }

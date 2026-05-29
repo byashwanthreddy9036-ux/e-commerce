@@ -8,7 +8,7 @@ export const adminLogin = async (req, res) => {
             email : loginData.email,
             role : loginData.role
         })
-        return res.send({
+        return res.json({
             success: true,
             message: 'Login successful',
             data: {
@@ -22,8 +22,8 @@ export const adminLogin = async (req, res) => {
             },
         })
     } catch (error) {
-        return res.send({
-            sucess: false,
+        return res.json({
+            success: false,
             message: error
         })
     }

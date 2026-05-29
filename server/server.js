@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3000
 const server = express()
 
 server.get('/', (req, res) => {
-    res.send({
+    res.json({
         success: true,
         message: 'Routes are working fine'
     })
@@ -25,7 +25,7 @@ server.use(express.json())
 server.use('/api/admin/', adminRoutes)
 
 server.use((req, res) => {
-    res.send({
+    res.json({
         success: false,
         message: 'Route does not exist'
     })

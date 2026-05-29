@@ -5,7 +5,7 @@ import { adminLogin } from '../controllers/admin.controllers.js'
 const adminRoutes = express.Router()
 
 adminRoutes.get('/', (req, res) => {
-    res.send({
+    res.json({
         success: true,
         message: 'Admin routes are working just fine'
     })
@@ -18,7 +18,7 @@ adminRoutes.use(adminAuthMiddleware)
 // adminRoutes.post('/delete-prod/:id', deleteProduct)
 
 adminRoutes.use((req, res) => {
-    res.send({
+    res.json({
         success: false,
         message: 'Admin route not found'
     })
