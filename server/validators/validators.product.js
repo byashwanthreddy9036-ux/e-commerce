@@ -16,3 +16,16 @@ export const createProductSchema = z.object({
     //     })
     //     .optional(),
 });
+
+
+export const updateProductSchema = z.object({
+  id: z.string().min(24).max(24),
+  description: z.string().min(7).optional(),
+  price: z.coerce.number().min(1).optional(),
+  category: z.string().min(3).optional(),
+  stock: z.coerce.number().min(0).optional(),
+  image: z.string().url().optional(),
+  brand: z.string().optional(),
+}).refine((data) => Object.keys(data).length > 1, {
+  message: "At least one field must be updated",
+});

@@ -16,3 +16,28 @@ export const createProduct = async (req, res) => {
         })
     }
 }
+
+export const updateProduct = async (req, res) => {
+    try {
+        const { id, prodData } = req;
+
+        const updatedProduct = await Product.findByIdAndUpdate(
+            id,
+            prodData,
+            {
+                returnDocument: "after", runValidators: true
+            }
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "Product updated successfully",
+            data: updatedProduct,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+};

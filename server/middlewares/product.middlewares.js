@@ -1,5 +1,5 @@
 import Product from "../models/Products.js";
-import { createProductSchema } from "../validators/validators.product.js";
+import { createProductSchema, updateProductSchema } from "../validators/validators.product.js";
 
 export const createProductMiddleware = async (req, res, next) => {
     try {
@@ -17,8 +17,7 @@ export const createProductMiddleware = async (req, res, next) => {
             });
         }
 
-        const { name, description, price, category, stock, image, brand } =
-            parsed.data;
+        const { name, description, price, category, stock, image, brand } = parsed.data;
 
         const existingProduct = await Product.findOne({ name });
 
@@ -48,4 +47,39 @@ export const createProductMiddleware = async (req, res, next) => {
             message: "Internal Server Error",
         });
     }
+};
+
+export const updateProductMiddleware = async (req, res, next) => {
+  try {
+    const parsed = updateProductSchema.safeParse(req.body);
+
+    if (!parsed.success) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation error",
+        errors: parsed.error.flatten().fieldErrors,
+      });
+    }
+
+    const { id, ...updateData } = parsed.data;
+
+    const existingProduct = await Product.findById(id);
+
+    if (!existingProduct) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    req.id = id;
+    req.prodData = updateData;
+
+    next();
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
 };
