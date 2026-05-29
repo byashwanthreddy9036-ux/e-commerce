@@ -12,8 +12,8 @@ const seedAdmin = async () => {
 
         const adminData = {
             fullname: 'Admin',
-            email: 'admin@tasky.com',
-            password: 'Admin@tasky123',
+            email: 'admin@ecom.com',
+            password: 'Admin@ecom123',
             role: 'admin',
             tokens: {
                 email: token()

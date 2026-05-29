@@ -1,5 +1,5 @@
-import { comparePassword } from '../services/bcrypt.js'
-import { decodeJWT } from '../services/jwt.js'
+import { comparePassword } from '../utils/bcrypt.js'
+import { decodeJWT } from '../utils/jwt.js'
 import Admin from '../models/Admin.js'
 
 export const adminLoginMiddleware = async (req, res, next) => {
