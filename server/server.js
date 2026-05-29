@@ -3,7 +3,10 @@ import dotenv from 'dotenv'
 import cors from 'cors'
 
 import './dbConnect.js'
+import './seeding/admin.seeding.js'
+
 import adminRoutes from './routes/admin.routes.js'
+
 dotenv.config()
 
 const PORT = process.env.PORT || 3000

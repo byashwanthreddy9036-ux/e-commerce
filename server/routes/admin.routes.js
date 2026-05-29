@@ -1,4 +1,6 @@
 import express from 'express'
+import { adminAuthMiddleware, adminLoginMiddleware } from '../middlewares/admin.middlewares'
+import { adminLogin } from '../controllers/admin.controllers'
 
 const adminRoutes = express.Router()
 
@@ -8,6 +10,12 @@ adminRoutes.get('/', (req, res) => {
         message: 'Admin routes are working just fine'
     })
 })
+
+adminRoutes.post('/login', adminLoginMiddleware, adminLogin)
+adminRoutes.use(adminAuthMiddleware)
+// adminRoutes.post('/create-prod', createProduct)
+// adminRoutes.post('/update-prod', updateProduct)
+// adminRoutes.post('/delete-prod/:id', deleteProduct)
 
 adminRoutes.use((req, res) => {
     res.send({
