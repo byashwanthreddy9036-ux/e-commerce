@@ -52,12 +52,16 @@ export const createProductMiddleware = async (req, res, next) => {
 export const updateProductMiddleware = async (req, res, next) => {
   try {
     const parsed = updateProductSchema.safeParse(req.body);
+    const errors = parsed.error.flatten();
 
     if (!parsed.success) {
       return res.status(400).json({
         success: false,
         message: "Validation error",
-        errors: parsed.error.flatten().fieldErrors,
+        errors: {
+          fields: errors.fieldErrors,
+          form: errors.formErrors,
+        },
       });
     }
 

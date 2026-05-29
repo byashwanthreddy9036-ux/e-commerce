@@ -19,14 +19,20 @@ export const createProductSchema = z.object({
 
 
 export const updateProductSchema = z.object({
-  id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId"),
+  id: z.string().regex(/^[0-9a-fA-F]{24}$/),
+
   description: z.string().min(7).optional(),
   price: z.coerce.number().min(1).optional(),
   category: z.string().min(3).optional(),
   stock: z.coerce.number().min(0).optional(),
   image: z.string().url().optional(),
   brand: z.string().optional(),
-}).refine((data) => Object.keys(data).length > 1, {
-  message: "At least one field must be updated",
+}).superRefine((data, ctx) => {
+  if (Object.keys(data).length <= 1) {
+    ctx.addIssue({
+      code: "custom",
+      message: "At least one field must be updated",
+      path: [], // form-level error
+    });
+  }
 });
-
