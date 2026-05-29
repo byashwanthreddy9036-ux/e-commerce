@@ -1,27 +1,33 @@
 import express from 'express'
 import dotenv from 'dotenv'
+import cors from 'cors'
 
+import './dbConnect.js'
+import adminRoutes from './routes/admin.routes.js'
 dotenv.config()
 
-const PORT = process.env.PORT 
+const PORT = process.env.PORT || 3000
 const server = express()
 
-server.get('/', (req,res)=>{
+server.get('/', (req, res) => {
     res.send({
-        success:true,
-        message:'Routes are working fine'
+        success: true,
+        message: 'Routes are working fine'
     })
 })
 
+server.use(cors())
 server.use(express.json())
 
-server.use((req,res)=>{
+server.use('/api/admin/', adminRoutes)
+
+server.use((req, res) => {
     res.send({
-        success:false,
-        message:'Route does not exist'
+        success: false,
+        message: 'Route does not exist'
     })
 })
 
-server.listen(PORT,()=>{
-    console.log('Live at @'+PORT);
+server.listen(PORT, () => {
+    console.log('Live at @' + PORT);
 })
