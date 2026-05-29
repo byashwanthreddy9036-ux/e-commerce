@@ -1,23 +1,24 @@
 import { comparePassword } from '../utils/bcrypt.js'
 import { decodeJWT } from '../utils/jwt.js'
 import Admin from '../models/Admin.js'
+import { adminLoginSchema } from "../validators/validators.admin.js";
+
 
 export const adminLoginMiddleware = async (req, res, next) => {
     try {
-        if (!req.body) {
+        const parsed = adminLoginSchema.safeParse(req.body);
+
+        if (!parsed.success) {
             return res.json({
                 success: false,
-                message: 'Body is required'
-            })
+                message: "Validation error",
+                errors: parsed.error.flatten().fieldErrors,
+            });
         }
-        const { email, password } = req.body
-        if (!email || !password) {
-            return res.json({
-                success: false,
-                message: 'Invalid body'
-            })
-        }
-        const exisitingAdmin = await Admin.findOne({email})
+
+        const { email, password } = parsed.data
+
+        const exisitingAdmin = await Admin.findOne({ email })
 
         if (!exisitingAdmin) {
             return res.json({

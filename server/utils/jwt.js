@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 
-const secret = process.env.SECRET || 'vhsdbvjn'
+const secret = process.env.SECRET 
 
 export const generateJWT = (payload) => {
     try {

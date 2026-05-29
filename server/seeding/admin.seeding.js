@@ -35,4 +35,3 @@ const seedAdmin = async () => {
 
 seedAdmin()
 
-export default { seedAdmin }
