@@ -29,3 +29,4 @@ export const updateProductSchema = z.object({
 }).refine((data) => Object.keys(data).length > 1, {
   message: "At least one field must be updated",
 });
+

@@ -2,7 +2,7 @@ import express from 'express'
 import { adminAuthMiddleware, adminLoginMiddleware } from '../middlewares/admin.middlewares.js'
 import { adminLogin } from '../controllers/admin.controllers.js'
 import { createProductMiddleware, updateProductMiddleware } from '../middlewares/product.middlewares.js'
-import { createProduct, updateProduct } from '../controllers/product.controllers.js'
+import { createProduct, deleteProduct,  updateProduct } from '../controllers/product.controllers.js'
 
 const adminRoutes = express.Router()
 
@@ -15,9 +15,10 @@ adminRoutes.get('/', (req, res) => {
 
 adminRoutes.post('/login', adminLoginMiddleware, adminLogin)
 adminRoutes.use(adminAuthMiddleware)
+// adminRoutes.get('/prod', getAllProducts)
 adminRoutes.post('/create-prod', createProductMiddleware, createProduct)
 adminRoutes.put('/update-prod', updateProductMiddleware, updateProduct)
-// adminRoutes.post('/delete-prod/:id', deleteProduct)
+adminRoutes.delete('/delete-prod/:id', deleteProduct)
 
 adminRoutes.use((req, res) => {
     return res.json({

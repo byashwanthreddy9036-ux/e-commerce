@@ -1,4 +1,5 @@
 import Product from '../models/Products.js'
+import mongoose from 'mongoose'
 
 export const createProduct = async (req, res) => {
     try {
@@ -41,3 +42,40 @@ export const updateProduct = async (req, res) => {
         });
     }
 };
+
+export const deleteProduct = async (req, res) => {
+    try {
+        const { id } = req.params
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                success: false,
+                message: "Provide valid ID",
+            });
+        }
+
+        const existingProduct = await Product.findById(id)
+
+        if (!existingProduct) {
+            res.json({
+                success: false,
+                message: 'No product associated with the ID'
+            })
+        }
+        await Product.findByIdAndDelete(id)
+        res.json({
+            success: true,
+            message: 'Product deleted successfully',
+            data: existingProduct
+        })
+
+    } catch (error) {
+        console.log(error);
+        
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+}
+
+// export const
