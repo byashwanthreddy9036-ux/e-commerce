@@ -9,7 +9,7 @@ export const adminLoginMiddleware = async (req, res, next) => {
         const parsed = adminLoginSchema.safeParse(req.body);
 
         if (!parsed.success) {
-            return res.json({
+            return res.status(400).json({
                 success: false,
                 message: "Validation error",
                 errors: parsed.error.flatten().fieldErrors,
@@ -21,20 +21,20 @@ export const adminLoginMiddleware = async (req, res, next) => {
         const existingAdmin = await Admin.findOne({ email })
 
         if (!existingAdmin) {
-            return res.json({
+            return res.status(401).json({
                 success: false,
                 message: 'Invalid credentials'
             })
         }
 
         if (!await comparePassword(password, existingAdmin.password)) {
-            return res.json({
+            return res.status(401).json({
                 success: false,
                 message: 'Invalid credentials'
             })
         }
         if (existingAdmin.role !== 'admin') {
-            return res.json({
+            return res.status(403).json({
                 success: false,
                 message: 'Permission denied'
             })
@@ -42,7 +42,7 @@ export const adminLoginMiddleware = async (req, res, next) => {
         req.loginData = existingAdmin
         next()
     } catch (error) {
-        return res.json({
+        return res.status(500).json({
             success: false,
             message: 'Internal Server Error'
         })
@@ -54,7 +54,7 @@ export const adminAuthMiddleware = async (req, res, next) => {
     try {
         const jwtToken = req.headers['auth-token']
         if (!jwtToken) {
-            return res.json({
+            return res.status(401).json({
                 success: false,
                 message: 'Jwt must be provided'
             })
@@ -81,6 +81,5 @@ export const adminAuthMiddleware = async (req, res, next) => {
             success: false,
             message: 'Internal Server Error'
         })
-
     }
 }

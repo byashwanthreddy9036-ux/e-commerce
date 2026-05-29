@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema(
         password: {
             type: String,
             required: true,
+            select:false
         },
 
         role: {
@@ -37,21 +38,19 @@ const userSchema = new mongoose.Schema(
         tokens: {
             email: {
                 type: String,
-                required: true
             },
             phone: {
                 type: String,
-                required: true
             },
         },
         verified: {
             email: {
                 type: Boolean,
-                default: false
+                default: true
             },
             phone: {
                 type: Boolean,
-                default: false
+                default: true
             },
         },
     },

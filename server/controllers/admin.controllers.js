@@ -22,7 +22,7 @@ export const adminLogin = async (req, res) => {
             },
         })
     } catch (error) {
-        return res.json({
+        return res.status(500).json({
             success: false,
             message: 'Internal Server Error'
         })

@@ -37,7 +37,7 @@ const seedAdmin = async () => {
 
     } catch (error) {
         console.log('Failed to seed admin');
-        console.log(error.message);
+        console.error(error.message);
     }
 }
 

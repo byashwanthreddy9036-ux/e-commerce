@@ -52,9 +52,9 @@ export const createProductMiddleware = async (req, res, next) => {
 export const updateProductMiddleware = async (req, res, next) => {
   try {
     const parsed = updateProductSchema.safeParse(req.body);
-    const errors = parsed.error.flatten();
 
     if (!parsed.success) {
+      const errors = parsed.error.flatten();
       return res.status(400).json({
         success: false,
         message: "Validation error",
@@ -67,7 +67,7 @@ export const updateProductMiddleware = async (req, res, next) => {
 
     const { id, ...updateData } = parsed.data;
 
-    req.id = id;
+    req.id = parsed.data.id;
     req.prodData = updateData;
 
     next();

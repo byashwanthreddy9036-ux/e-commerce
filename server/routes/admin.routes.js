@@ -22,7 +22,7 @@ adminRoutes.put('/update-prod', updateProductMiddleware, updateProduct)
 adminRoutes.delete('/delete-prod/:id', deleteProduct)
 
 adminRoutes.use((req, res) => {
-    return res.json({
+    return res.status(404).json({
         success: false,
         message: 'Admin route not found'
     })

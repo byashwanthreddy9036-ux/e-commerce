@@ -11,7 +11,7 @@ export const createProduct = async (req, res) => {
             data: prod
         })
     } catch (error) {
-        return res.status(401).json({
+        return res.status(500).json({
             success: false,
             message: 'Internal Server Error'
         })
@@ -64,7 +64,7 @@ export const deleteProduct = async (req, res) => {
         const existingProduct = await Product.findByIdAndDelete(id)
 
         if (!existingProduct) {
-            return res.json({
+            return res.status(404).json({
                 success: false,
                 message: 'No product associated with the ID'
             })
@@ -112,7 +112,7 @@ export const getProductByID = async (req, res) => {
         const existingProduct = await Product.findById(id)
 
         if (!existingProduct) {
-            return res.json({
+            return res.status(404).json({
                 success: false,
                 message: 'No product associated with the ID'
             })
