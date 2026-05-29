@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 export default function token() {
-    return Math.random().toString(36).substring(2);
+    return crypto.randomBytes(32).toString('hex');
 }

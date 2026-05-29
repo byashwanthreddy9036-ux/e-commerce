@@ -6,6 +6,7 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      unique: true
     },
 
     description: {
@@ -16,6 +17,7 @@ const productSchema = new mongoose.Schema(
     price: {
       type: Number,
       required: true,
+      min:1
     },
 
     category: {
@@ -26,6 +28,7 @@ const productSchema = new mongoose.Schema(
     stock: {
       type: Number,
       default: 0,
+      min:0
     },
 
     image: {

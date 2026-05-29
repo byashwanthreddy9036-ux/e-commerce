@@ -26,12 +26,6 @@ export const adminLoginMiddleware = async (req, res, next) => {
             })
         }
 
-        if ((email !== exisitingAdmin.email)) {
-            return res.json({
-                success: false,
-                message: 'Admin does not match'
-            })
-        }
         if (!await comparePassword(password, exisitingAdmin.password)) {
             return res.json({
                 success: false,
@@ -49,7 +43,7 @@ export const adminLoginMiddleware = async (req, res, next) => {
     } catch (error) {
         return res.json({
             success: false,
-            message: error
+            message: 'Internal Server Error'
         })
     }
 
@@ -64,7 +58,7 @@ export const adminAuthMiddleware = async (req, res, next) => {
                 message: 'Jwt must be provided'
             })
         }
-        const adminData = await decodeJWT(jwtToken)
+        const adminData = decodeJWT(jwtToken)
         if (!adminData) {
             return res.status(401).json({
                 success: false,
@@ -84,7 +78,7 @@ export const adminAuthMiddleware = async (req, res, next) => {
     } catch (error) {
         return res.status(401).json({
             success: false,
-            message: error.message
+            message: 'Internal Server Error'
         })
 
     }

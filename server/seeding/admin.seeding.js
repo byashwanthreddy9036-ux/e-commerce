@@ -1,6 +1,8 @@
 import Admin from '../models/Admin.js'
 import { hashPassword } from '../utils/bcrypt.js'
 import token from '../utils/token.js'
+import dotenv from 'dotenv'
+dotenv.config()
 
 const seedAdmin = async () => {
     try {
@@ -11,9 +13,9 @@ const seedAdmin = async () => {
         }
 
         const adminData = {
-            fullname: 'Admin',
-            email: 'admin@ecom.com',
-            password: 'Admin@ecom123',
+            fullname: process.env.ADMIN_FULLNAME,
+            email: process.env.ADMIN_EMAIL,
+            password: process.env.ADMIN_PASSWORD,
             role: 'admin',
             tokens: {
                 email: token()
@@ -22,12 +24,12 @@ const seedAdmin = async () => {
 
         adminData.password = await hashPassword(adminData.password)
 
-        const admin = await Admin.create(adminData)
+        await Admin.create(adminData)
         console.log('Admin seed successfull!');
 
     } catch (error) {
         console.log('Failed to seed admin');
-        console.log(error);
+        console.log(error.message);
     }
 }
 

@@ -1,12 +1,12 @@
 import { generateJWT } from '../utils/jwt.js'
 
 export const adminLogin = async (req, res) => {
-    try {        
+    try {
         const loginData = req.loginData
-        const token = await generateJWT({
-            id : loginData._id,
-            email : loginData.email,
-            role : loginData.role
+        const token = generateJWT({
+            id: loginData._id,
+            email: loginData.email,
+            role: loginData.role
         })
         return res.json({
             success: true,
@@ -24,7 +24,7 @@ export const adminLogin = async (req, res) => {
     } catch (error) {
         return res.json({
             success: false,
-            message: error
+            message: 'Internal Server Error'
         })
     }
 }

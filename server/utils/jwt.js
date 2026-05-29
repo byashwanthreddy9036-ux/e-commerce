@@ -1,24 +1,22 @@
 import jwt from 'jsonwebtoken'
-import dotenv from 'dotenv'
 
-dotenv.config()
-const secret = process.env.SECRET
+const secret = process.env.SECRET || 'vhsdbvjn'
 
-export const generateJWT = async (payload) => {
+export const generateJWT = (payload) => {
     try {
-        const jwtToken = await jwt.sign({ data: payload }, secret, { expiresIn: 12000000000000 })
+        const jwtToken = jwt.sign({ data: payload }, secret, { expiresIn: '1d' })
         return jwtToken
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
 }
 
-export const decodeJWT = async (token) => {
+export const decodeJWT = (token) => {
     try {
-        const decoded = await jwt.verify(token, secret)
+        const decoded = jwt.verify(token, secret)
         return decoded.data
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
 }
 
