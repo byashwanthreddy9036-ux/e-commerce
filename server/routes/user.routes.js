@@ -1,17 +1,17 @@
 import express from 'express'
-import { registerUserMiddleware} from '../middlewares/user.middleware.js'
-import { registerUser } from '../controllers/user.controllers.js'
+import { registerUserMiddleware, userLoginMiddleware} from '../middlewares/user.middleware.js'
+import { registerUser, userLogin } from '../controllers/user.controllers.js'
 const userRoutes = express.Router()
 
 userRoutes.get('/', (req, res) => {
     return res.json({
         success: true,
-        message: 'USer routes are working just fine'
+        message: 'User routes are working just fine'
     })
 })
 
 userRoutes.post('/register', registerUserMiddleware, registerUser)
-// userRoutes.post('/login', userLoginMiddleware, userLogin)
+userRoutes.post('/login', userLoginMiddleware, userLogin)
 
 // userRoutes.use(userAuthMiddleware)
 

@@ -77,7 +77,7 @@ export const adminAuthMiddleware = async (req, res, next) => {
         req.admin = admin
         next()
     } catch (error) {
-        return res.status(401).json({
+        return res.status(500).json({
             success: false,
             message: 'Internal Server Error'
         })

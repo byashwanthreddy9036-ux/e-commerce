@@ -5,7 +5,7 @@ export const createProduct = async (req, res) => {
     try {
         const prodData = req.prodData
         const prod = await Product.create(prodData)
-        return res.json({
+        return res.status(201).json({
             success: true,
             message: 'Product added to DB',
             data: prod
