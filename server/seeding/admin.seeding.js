@@ -4,6 +4,14 @@ import token from '../utils/token.js'
 import dotenv from 'dotenv'
 dotenv.config()
 
+function requireEnv(name) {
+    const value = process.env[name];
+    if (!value) {
+        throw new Error(`Missing env variable: ${name}`);
+    }
+    return value;
+}
+
 const seedAdmin = async () => {
     try {
         const existingAdmin = await Admin.findOne()
@@ -13,19 +21,19 @@ const seedAdmin = async () => {
         }
 
         const adminData = {
-            fullname: process.env.ADMIN_FULLNAME,
-            email: process.env.ADMIN_EMAIL,
-            password: process.env.ADMIN_PASSWORD,
-            role: 'admin',
+            fullname: requireEnv("ADMIN_FULLNAME"),
+            email: requireEnv("ADMIN_EMAIL"),
+            password: requireEnv("ADMIN_PASSWORD"),
+            role: "admin",
             tokens: {
-                email: token()
-            }
-        }
+                email: token(),
+            },
+        };
 
         adminData.password = await hashPassword(adminData.password)
 
         await Admin.create(adminData)
-        console.log('Admin seed successfull!');
+        console.log('Admin seed successful!');
 
     } catch (error) {
         console.log('Failed to seed admin');

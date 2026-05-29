@@ -18,28 +18,28 @@ export const adminLoginMiddleware = async (req, res, next) => {
 
         const { email, password } = parsed.data
 
-        const exisitingAdmin = await Admin.findOne({ email })
+        const existingAdmin = await Admin.findOne({ email })
 
-        if (!exisitingAdmin) {
+        if (!existingAdmin) {
             return res.json({
                 success: false,
                 message: 'Invalid credentials'
             })
         }
 
-        if (!await comparePassword(password, exisitingAdmin.password)) {
+        if (!await comparePassword(password, existingAdmin.password)) {
             return res.json({
                 success: false,
                 message: 'Invalid credentials'
             })
         }
-        if (exisitingAdmin.role !== 'admin') {
+        if (existingAdmin.role !== 'admin') {
             return res.json({
                 success: false,
                 message: 'Permission denied'
             })
         }
-        req.loginData = exisitingAdmin
+        req.loginData = existingAdmin
         next()
     } catch (error) {
         return res.json({

@@ -1,6 +1,13 @@
 import jwt from 'jsonwebtoken'
 
-const secret = process.env.SECRET 
+export const getSecret = () => {
+  if (!process.env.SECRET) {
+    throw new Error("SECRET is not defined in environment variables");
+  }
+  return process.env.SECRET;
+};
+
+const secret = getSecret() 
 
 export const generateJWT = (payload) => {
     try {

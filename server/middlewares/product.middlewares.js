@@ -63,15 +63,6 @@ export const updateProductMiddleware = async (req, res, next) => {
 
     const { id, ...updateData } = parsed.data;
 
-    const existingProduct = await Product.findById(id);
-
-    if (!existingProduct) {
-      return res.status(404).json({
-        success: false,
-        message: "Product not found",
-      });
-    }
-
     req.id = id;
     req.prodData = updateData;
 
