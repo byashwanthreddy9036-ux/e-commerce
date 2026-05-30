@@ -118,6 +118,12 @@ export const userLogin = async (req, res) => {
 export const getUserDetails = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select('-tokens -verified');
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        message: 'No user found'
+      })
+    }
     res.status(200).json({
       success: true,
       message: 'User fetched successfully',

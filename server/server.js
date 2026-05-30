@@ -28,7 +28,7 @@ server.get('/', (req, res) => {
 
 
 server.use('/api/admin/', adminRoutes)
-server.use('/api/user/', userRoutes)
+server.use('/api/', userRoutes)
 
 server.use((req, res) => {
     return res.status(404).json({

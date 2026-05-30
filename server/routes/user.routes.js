@@ -1,6 +1,8 @@
 import express from 'express'
-import { registerUserMiddleware, updateUserMiddleware, userAuthMiddleware, userLoginMiddleware} from '../middlewares/user.middleware.js'
+import { registerUserMiddleware, updateUserMiddleware, userAuthMiddleware, userLoginMiddleware } from '../middlewares/user.middleware.js'
 import { deleteUserDetails, getUserDetails, registerUser, updateUserDetails, userLogin } from '../controllers/user.controllers.js'
+import { addProduct } from '../controllers/cart.controller.js'
+import { validateAddProduct } from '../middlewares/cart.middlewares.js'
 const userRoutes = express.Router()
 
 userRoutes.get('/', (req, res) => {
@@ -10,14 +12,14 @@ userRoutes.get('/', (req, res) => {
     })
 })
 
-userRoutes.post('/register', registerUserMiddleware, registerUser)
-userRoutes.post('/login', userLoginMiddleware, userLogin)
+userRoutes.post('/user/register', registerUserMiddleware, registerUser)
+userRoutes.post('/user/login', userLoginMiddleware, userLogin)
 
 userRoutes.use(userAuthMiddleware)
 
-userRoutes.get('/details', getUserDetails)
-userRoutes.put('/details', updateUserMiddleware, updateUserDetails)
-userRoutes.delete('/details/:id', deleteUserDetails)
+userRoutes.get('/user/details', getUserDetails)
+userRoutes.put('/user/details', updateUserMiddleware, updateUserDetails)
+userRoutes.delete('/user/details/', deleteUserDetails)
 
 // userRoutes.get('/wishlist', getAllWishList)
 // userRoutes.get('/wishlist/:id', getProductByID)
@@ -26,7 +28,7 @@ userRoutes.delete('/details/:id', deleteUserDetails)
 // POST /wishlist/:id/move-to-cart
 // userRoutes.get('/cart', getAllCart)
 // userRoutes.get('/cart/:id', getProductByID)
-// userRoutes.post('/cart', addProduct)
+userRoutes.post('/cart', validateAddProduct, addProduct)
 // userRoutes.put('/cart/:id', updateCartQuantity)
 // userRoutes.delete('/cart/:id', deleteProduct)
 // userRoutes.delete('/cart/all', deleteAllProducts)
