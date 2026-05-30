@@ -4,6 +4,7 @@ import { sendEmail } from '../services/email.js'
 
 import { sendSMS } from '../services/phone.js'
 import token from '../utils/token.js'
+import mongoose from 'mongoose'
 
 export const registerUser = async (req, res) => {
   try {
@@ -166,3 +167,36 @@ export const updateUserDetails = async (req, res) => {
   }
 }
 
+export const deleteUserDetails = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Provide valid ID",
+      });
+    }
+
+    const user = await User.findByIdAndDelete(id)
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'No user associate with id'
+      })
+    }
+
+    return res.json({
+      success: true,
+      message: 'User deleted successfully',
+      data: user
+    })
+  } catch (error) {
+
+    return res.status(500).json({
+      success: false,
+      message: 'Internal Server Error'
+    })
+  }
+}

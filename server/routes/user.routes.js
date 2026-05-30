@@ -1,6 +1,6 @@
 import express from 'express'
 import { registerUserMiddleware, updateUserMiddleware, userAuthMiddleware, userLoginMiddleware} from '../middlewares/user.middleware.js'
-import { getUserDetails, registerUser, updateUserDetails, userLogin } from '../controllers/user.controllers.js'
+import { deleteUserDetails, getUserDetails, registerUser, updateUserDetails, userLogin } from '../controllers/user.controllers.js'
 const userRoutes = express.Router()
 
 userRoutes.get('/', (req, res) => {
