@@ -11,3 +11,8 @@ export const userLoginSchema = z.object({
   email: z.string().email("Invalid email format"),
   password: z.string().min(1, "Password is required"),
 });
+
+export const updateUserSchema = z.object({
+  id: z.string().regex(/^[0-9a-fA-F]{24}$/),
+    fullname: z.string().min(3, "Name is required"),
+})

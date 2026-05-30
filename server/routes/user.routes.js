@@ -1,6 +1,6 @@
 import express from 'express'
-import { registerUserMiddleware, userLoginMiddleware} from '../middlewares/user.middleware.js'
-import { registerUser, userLogin } from '../controllers/user.controllers.js'
+import { registerUserMiddleware, updateUserMiddleware, userAuthMiddleware, userLoginMiddleware} from '../middlewares/user.middleware.js'
+import { getUserDetails, registerUser, updateUserDetails, userLogin } from '../controllers/user.controllers.js'
 const userRoutes = express.Router()
 
 userRoutes.get('/', (req, res) => {
@@ -13,11 +13,11 @@ userRoutes.get('/', (req, res) => {
 userRoutes.post('/register', registerUserMiddleware, registerUser)
 userRoutes.post('/login', userLoginMiddleware, userLogin)
 
-// userRoutes.use(userAuthMiddleware)
+userRoutes.use(userAuthMiddleware)
 
-//userRoutes.get('/details', getUserDetails)
-//userRoutes.update('/details', updateUserDetails)
-//userRoutes.delete('/details', deleteUserDetails)
+userRoutes.get('/details', getUserDetails)
+userRoutes.put('/details', updateUserMiddleware, updateUserDetails)
+userRoutes.delete('/details/:id', deleteUserDetails)
 
 // userRoutes.get('/wishlist', getAllWishList)
 // userRoutes.get('/wishlist/:id', getProductByID)

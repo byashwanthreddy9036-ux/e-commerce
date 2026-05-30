@@ -3,6 +3,7 @@ import { generateJWT } from '../utils/jwt.js'
 import { sendEmail } from '../services/email.js'
 
 import { sendSMS } from '../services/phone.js'
+import token from '../utils/token.js'
 
 export const registerUser = async (req, res) => {
   try {
@@ -85,30 +86,83 @@ export const registerUser = async (req, res) => {
 }
 
 export const userLogin = async (req, res) => {
-    try {
-        const loginData = req.loginData
-        const token = generateJWT({
-            id: loginData._id,
-            email: loginData.email,
-            role: loginData.role
-        })
-        return res.json({
-            success: true,
-            message: 'Login successful',
-            data: {
-                user: {
-                    id: loginData._id,
-                    fullname: loginData.fullname,
-                    email: loginData.email,
-                    role: loginData.role
-                },
-                token
-            },
-        })
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: 'Internal Server Error'
-        })
-    }
+  try {
+    const loginData = req.loginData
+    const token = generateJWT({
+      id: loginData._id,
+      email: loginData.email,
+      role: loginData.role
+    })
+    return res.json({
+      success: true,
+      message: 'Login successful',
+      data: {
+        user: {
+          id: loginData._id,
+          fullname: loginData.fullname,
+          email: loginData.email,
+          role: loginData.role
+        },
+        token
+      },
+    })
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Internal Server Error'
+    })
+  }
 }
+
+export const getUserDetails = async (req, res) => {
+  try {
+    const user = await User.find().select('-tokens -verified');
+    res.status(200).json({
+      success: true,
+      message: 'User fetched successfully',
+      user
+    })
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Internal Server Error'
+    })
+
+  }
+}
+
+export const updateUserDetails = async (req, res) => {
+  try {
+    const { id, userData } = req;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { $set: userData },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      data: updatedUser,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Internal Server Error'
+    })
+
+  }
+}
+

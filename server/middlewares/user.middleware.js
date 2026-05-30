@@ -1,7 +1,8 @@
 import User from "../models/Users.js";
-import { registerUserSchema, userLoginSchema } from "../validators/validators.user.js"
+import { registerUserSchema, updateUserSchema, userLoginSchema } from "../validators/validators.user.js"
 import { hashPassword, comparePassword } from '../utils/bcrypt.js'
 import token from '../utils/token.js'
+import { decodeJWT } from "../utils/jwt.js";
 
 export const registerUserMiddleware = async (req, res, next) => {
     try {
@@ -49,7 +50,7 @@ export const registerUserMiddleware = async (req, res, next) => {
         // console.log("i was here");
     } catch (error) {
         console.error(error);
-        console.log('error');
+        // console.log('error');
         console.error(error.message);
 
         return res.status(500).json({
@@ -81,16 +82,16 @@ export const userLoginMiddleware = async (req, res, next) => {
                 message: 'Invalid credentials'
             })
         }
-        console.log(user);
-        console.log(password);
-        console.log(user.password);
-        console.log("USER PASSWORD FIELD:", user.password);
-        console.log("COMPARE INPUTS:", {
-            password,
-            dbPassword: user.password
-        });
+        // console.log(user);
+        // console.log(password);
+        // console.log(user.password);
+        // console.log("USER PASSWORD FIELD:", user.password);
+        // console.log("COMPARE INPUTS:", {
+        //     password,
+        //     dbPassword: user.password
+        // });
 
-        const match = await comparePassword(password, user.password);
+        // const match = await comparePassword(password, user.password);
         const isMatch = await comparePassword(password, user.password)
         console.log(isMatch);
 
@@ -122,4 +123,64 @@ export const userLoginMiddleware = async (req, res, next) => {
         })
     }
 
+}
+
+export const userAuthMiddleware = async (req, res, next) => {
+    try {
+        const jwtToken = req.headers['auth-token']
+        if (!jwtToken) {
+            return res.status(401).json({
+                success: false,
+                message: 'Jwt must be provided'
+            })
+        }
+        const userData = decodeJWT(jwtToken)
+        if (!userData) {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid or expired token'
+            })
+        }
+        const user = await User.findById(userData.id)
+
+        if (!user || user.role !== userData.role) {
+            return res.status(401).json({
+                success: false,
+                message: 'Auth failure'
+            })
+        }
+        req.user = user
+        next()
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Internal Server Error'
+        })
+    }
+}
+
+export const updateUserMiddleware = async (req, res, next) => {
+    try {
+        const parsed = updateUserSchema.safeParse(req.body)
+        if (!parsed.success) {
+            return res.status(400).json({
+                success: false,
+                message: "Validation error",
+                errors: parsed.error.flatten().fieldErrors,
+            });
+        }
+
+        const { id, ...updateUser } = parsed.data;
+
+        req.id = parsed.data.id;
+        req.userData = updateUser;
+
+        next();
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Internal Server Error'
+        })
+    }
 }
