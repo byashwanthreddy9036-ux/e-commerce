@@ -51,7 +51,7 @@ export const registerUserMiddleware = async (req, res, next) => {
     } catch (error) {
         console.error(error);
         // console.log('error');
-        console.error(error.message);
+        // console.error(error.message);
 
         return res.status(500).json({
             success: false,
@@ -93,7 +93,7 @@ export const userLoginMiddleware = async (req, res, next) => {
 
         // const match = await comparePassword(password, user.password);
         const isMatch = await comparePassword(password, user.password)
-        console.log(isMatch);
+        // console.log(isMatch);
 
         if (!(isMatch)) {
             return res.status(401).json({

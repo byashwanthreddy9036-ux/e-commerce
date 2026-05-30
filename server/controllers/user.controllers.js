@@ -117,11 +117,11 @@ export const userLogin = async (req, res) => {
 
 export const getUserDetails = async (req, res) => {
   try {
-    const user = await User.find().select('-tokens -verified');
+    const user = await User.findById(req.user._id).select('-tokens -verified');
     res.status(200).json({
       success: true,
       message: 'User fetched successfully',
-      user
+      data: user
     })
   } catch (error) {
     return res.status(500).json({
@@ -137,7 +137,7 @@ export const updateUserDetails = async (req, res) => {
     const { id, userData } = req;
 
     const updatedUser = await User.findByIdAndUpdate(
-      id,
+      req.user._id,
       { $set: userData },
       {
         new: true,
@@ -169,8 +169,7 @@ export const updateUserDetails = async (req, res) => {
 
 export const deleteUserDetails = async (req, res) => {
   try {
-    const { id } = req.params
-
+    const id = req.user._id
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
