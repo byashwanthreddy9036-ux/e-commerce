@@ -24,6 +24,8 @@ export const decodeJWT = (token) => {
         return decoded.data
     } catch (error) {
         console.error(error);
+        throw error
+        
     }
 }
 

@@ -102,6 +102,14 @@ export const decreaseProduct = async (req, res) => {
 
         if (cart.items[itemIndex].quantity > 1) {
             const product = await Product.findById(productId);
+            if (!product) {
+                cart.items.splice(itemIndex, 1);
+
+                return res.json({
+                    success: true,
+                    message: 'Product not found, removed from cart'
+                })
+            }
             const stock = product.stock;
             if (stock < cart.items[itemIndex].quantity)
                 cart.items[itemIndex].quantity = stock;
@@ -130,6 +138,8 @@ export const decreaseProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
     try {
+        const userId = req.user._id;
+
         const { id } = req.params
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -151,6 +161,41 @@ export const deleteProduct = async (req, res) => {
 
         cart.items = cart.items.filter(
             item => item.product.toString() !== id
+        );
+
+        await cart.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Product removed from cart",
+            cart
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+
+    }
+}
+
+export const deleteAllProduct = async (req, res) => {
+    try {
+        const userId = req.user._id;
+
+        const cart = await Cart.findOne({ user: userId });
+
+        if (!cart) {
+            return res.status(404).json({
+                success: false,
+                message: "Cart not found"
+            });
+        }
+
+        cart.items = cart.items.filter(
+            item => item.product.toString() !== productId
         );
 
         await cart.save();
