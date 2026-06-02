@@ -1,7 +1,8 @@
 import express from 'express'
 import { registerUserMiddleware, updateUserMiddleware, userAuthMiddleware, userLoginMiddleware } from '../middlewares/user.middleware.js'
 import { deleteUserDetails, getUserDetails, registerUser, updateUserDetails, userLogin } from '../controllers/user.controllers.js'
-import { addProduct, decreaseProduct, deleteAllProducts, deleteProduct } from '../controllers/cart.controller.js'
+import { addProduct, decreaseProduct, deleteAllProducts, deleteProduct, getAllCart, orderPlaced } from '../controllers/cart.controller.js'
+import { addProductWish, decreaseProductWish, deleteAllProductsWish, deleteProductWish, getAllWishlist } from '../controllers/wishlist.controllers.js'
 const userRoutes = express.Router()
 
 userRoutes.get('/', (req, res) => {
@@ -20,11 +21,13 @@ userRoutes.get('/user/details', getUserDetails)
 userRoutes.put('/user/details', updateUserMiddleware, updateUserDetails)
 userRoutes.delete('/user/details/', deleteUserDetails)
 
-// userRoutes.get('/wishlist', getAllWishList)
-// userRoutes.get('/wishlist/:id', getProductByID)
-// userRoutes.post('/wishlist', addProduct)
-// userRoutes.delete('/wishlist/:id', deleteProduct)
-// POST /wishlist/:id/move-to-cart
+userRoutes.get('/wishlist', getAllWishlist)
+userRoutes.post('/wishlist/inc/:id', addProductWish)
+userRoutes.put('/wishlist/dec/:productId', decreaseProductWish)
+userRoutes.delete('/wishlit/:productId', deleteProductWish)
+userRoutes.delete('/wishlist/all', deleteAllProductsWish)
+// userRoutes.post('/wishlist/move-to-cart', orderPlaced)
+
 userRoutes.get('/cart', getAllCart)
 userRoutes.post('/cart/inc/:id', addProduct)
 userRoutes.put('/cart/dec/:productId', decreaseProduct)
