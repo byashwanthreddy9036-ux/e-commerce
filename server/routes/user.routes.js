@@ -1,7 +1,7 @@
 import express from 'express'
 import { registerUserMiddleware, updateUserMiddleware, userAuthMiddleware, userLoginMiddleware } from '../middlewares/user.middleware.js'
 import { deleteUserDetails, getUserDetails, registerUser, updateUserDetails, userLogin } from '../controllers/user.controllers.js'
-import { addProduct, decreaseProduct, deleteAllProduct, deleteProduct } from '../controllers/cart.controller.js'
+import { addProduct, decreaseProduct, deleteAllProducts, deleteProduct } from '../controllers/cart.controller.js'
 const userRoutes = express.Router()
 
 userRoutes.get('/', (req, res) => {
@@ -27,11 +27,11 @@ userRoutes.delete('/user/details/', deleteUserDetails)
 // POST /wishlist/:id/move-to-cart
 // userRoutes.get('/cart', getAllCart)
 // userRoutes.get('/cart/:id', getProductByID)
-userRoutes.post('/cart/inc/:id',  addProduct)
-userRoutes.put('/cart/dec/:productId',  decreaseProduct)
+userRoutes.post('/cart/inc/:id', addProduct)
+userRoutes.put('/cart/dec/:productId', decreaseProduct)
 userRoutes.delete('/cart/:productId', deleteProduct)
-userRoutes.delete('/cart/all', deleteAllProduct)
-// userRoutes.post('/cart/order', orderPlaced)
+userRoutes.delete('/cart/all', deleteAllProducts)
+userRoutes.post('/cart/order', orderPlaced)
 
 userRoutes.use((req, res) => {
     return res.status(404).json({

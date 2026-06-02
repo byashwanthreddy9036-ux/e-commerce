@@ -181,7 +181,7 @@ export const deleteProduct = async (req, res) => {
     }
 }
 
-export const deleteAllProduct = async (req, res) => {
+export const deleteAllProducts = async (req, res) => {
     try {
         const userId = req.user._id;
 
@@ -194,15 +194,45 @@ export const deleteAllProduct = async (req, res) => {
             });
         }
 
-        cart.items = cart.items.filter(
-            item => item.product.toString() !== productId
-        );
+        cart.items = [];
 
         await cart.save();
 
         return res.status(200).json({
             success: true,
-            message: "Product removed from cart",
+            message: "Products removed from cart",
+            data: cart
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+
+    }
+}
+
+export const orderPlaced = async (req, res) => {
+    try {
+        const userId = req.user._id;
+
+        const cart = await Cart.findOne({ user: userId });
+
+        if (!cart) {
+            return res.status(404).json({
+                success: false,
+                message: "Cart not found"
+            });
+        }
+
+        cart.items = [];
+        await cart.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Order PLaced Successfully",
             cart
         });
 
