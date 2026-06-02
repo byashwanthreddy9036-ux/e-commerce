@@ -127,3 +127,46 @@ export const decreaseProduct = async (req, res) => {
         });
     }
 };
+
+export const deleteProduct = async (req, res) => {
+    try {
+        const { id } = req.params
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid product ID"
+            });
+        }
+
+        const cart = await Cart.findOne({ user: userId });
+
+
+        if (!cart) {
+            return res.status(404).json({
+                success: false,
+                message: "Cart not found"
+            });
+        }
+
+        cart.items = cart.items.filter(
+            item => item.product.toString() !== id
+        );
+
+        await cart.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Product removed from cart",
+            cart
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+
+    }
+}

@@ -27,9 +27,9 @@ userRoutes.delete('/user/details/', deleteUserDetails)
 // POST /wishlist/:id/move-to-cart
 // userRoutes.get('/cart', getAllCart)
 // userRoutes.get('/cart/:id', getProductByID)
-userRoutes.put('/cart/inc/:id',  addProduct)
+userRoutes.post('/cart/inc/:id',  addProduct)
 userRoutes.put('/cart/dec/:id',  decreaseProduct)
-// userRoutes.delete('/cart/:id', deleteProduct)
+userRoutes.delete('/cart/:id', deleteProduct)
 // userRoutes.delete('/cart/all', deleteAllProducts)
 // userRoutes.post('/cart/order', orderPlaced)
 
