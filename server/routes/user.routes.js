@@ -1,8 +1,7 @@
 import express from 'express'
 import { registerUserMiddleware, updateUserMiddleware, userAuthMiddleware, userLoginMiddleware } from '../middlewares/user.middleware.js'
 import { deleteUserDetails, getUserDetails, registerUser, updateUserDetails, userLogin } from '../controllers/user.controllers.js'
-import { addProduct } from '../controllers/cart.controller.js'
-import { validateAddProduct } from '../middlewares/cart.middlewares.js'
+import { addProduct, decreaseProduct } from '../controllers/cart.controller.js'
 const userRoutes = express.Router()
 
 userRoutes.get('/', (req, res) => {
@@ -28,8 +27,8 @@ userRoutes.delete('/user/details/', deleteUserDetails)
 // POST /wishlist/:id/move-to-cart
 // userRoutes.get('/cart', getAllCart)
 // userRoutes.get('/cart/:id', getProductByID)
-userRoutes.post('/cart', validateAddProduct, addProduct)
-// userRoutes.put('/cart/:id', updateCartQuantity)
+userRoutes.put('/cart/inc/:id',  addProduct)
+userRoutes.put('/cart/dec/:id',  decreaseProduct)
 // userRoutes.delete('/cart/:id', deleteProduct)
 // userRoutes.delete('/cart/all', deleteAllProducts)
 // userRoutes.post('/cart/order', orderPlaced)

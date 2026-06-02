@@ -5,7 +5,7 @@ import Cart from '../models/Cart.js'
 export const addProduct = async (req, res) => {
     try {
         const userId = req.user._id;
-        const { productId } = req.body;
+        const { productId } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(productId))
             return res.status(400).json({
@@ -57,6 +57,66 @@ export const addProduct = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: "Cart updated", data: cart
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+};
+
+export const decreaseProduct = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const { productId } = req.body;
+
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid product ID"
+            });
+        }
+
+        const cart = await Cart.findOne({ user: userId });
+
+        if (!cart) {
+            return res.status(404).json({
+                success: false,
+                message: "Cart not found"
+            });
+        }
+
+        const itemIndex = cart.items.findIndex(
+            item => item.product.toString() === productId
+        );
+
+        if (itemIndex === -1) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found in cart"
+            });
+        }
+
+        if (cart.items[itemIndex].quantity > 1) {
+            const product = await Product.findById(productId);
+            const stock = product.stock;
+            if (stock < cart.items[itemIndex].quantity)
+                cart.items[itemIndex].quantity = stock;
+            else
+                cart.items[itemIndex].quantity -= 1;
+        } else {
+            cart.items.splice(itemIndex, 1);
+        }
+
+        await cart.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Cart updated",
+            data: cart
         });
 
     } catch (error) {
