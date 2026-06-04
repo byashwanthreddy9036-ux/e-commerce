@@ -14,13 +14,6 @@ adminRoutes.get('/', (req, res) => {
 })
 
 adminRoutes.post('/login', adminLoginMiddleware, adminLogin)
-adminRoutes.use(adminAuthMiddleware)
-adminRoutes.get('/prod', getAllProducts)
-adminRoutes.get('/prod/:id', getAllProductByID)
-adminRoutes.get('/prod/:id', getProductByID)
-adminRoutes.post('/create-prod', createProductMiddleware, createProduct)
-adminRoutes.put('/update-prod', updateProductMiddleware, updateProduct)
-adminRoutes.delete('/delete-prod/:id', deleteProduct)
 
 adminRoutes.use((req, res) => {
     return res.status(404).json({

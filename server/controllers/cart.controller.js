@@ -241,7 +241,6 @@ export const orderPlaced = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Internal Server Error",
-            data
         });
 
     }
@@ -256,7 +255,8 @@ export const getAllCart = async (req, res) => {
         if (!cart) {
             return res.status(404).json({
                 success: false,
-                message: "Cart not found"
+                message: "Cart not found or empty",
+                data:[]
             });
         }
 
@@ -271,7 +271,6 @@ export const getAllCart = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Internal Server Error",
-            data
         });
 
     }

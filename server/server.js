@@ -8,6 +8,9 @@ import './seeding/admin.seeding.js'
 
 import adminRoutes from './routes/admin.routes.js'
 import userRoutes from './routes/user.routes.js'
+import wishlistRoutes from './routes/wishlist.routes.js'
+import cartRoutes from './routes/cart.routes.js'
+import productRoutes from './routes/prouduct.routes.js'
 
 
 const PORT = process.env.PORT || 3000
@@ -28,7 +31,11 @@ server.get('/', (req, res) => {
 
 
 server.use('/api/admin/', adminRoutes)
-server.use('/api/', userRoutes)
+server.use('/api/wishlist', wishlistRoutes)
+server.use('/api/cart', cartRoutes)
+server.use('/api/user/', userRoutes)
+server.use('/api/product/', productRoutes)
+
 
 server.use((req, res) => {
     return res.status(404).json({

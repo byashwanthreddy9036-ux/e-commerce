@@ -19,13 +19,7 @@ export const generateJWT = (payload) => {
 };
 
 export const decodeJWT = (token) => {
-    try {
         const decoded = jwt.verify(token, getSecret())
         return decoded.data
-    } catch (error) {
-        console.error(error);
-        throw error
-        
-    }
 }
 
