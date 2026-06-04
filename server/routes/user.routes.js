@@ -3,6 +3,7 @@ import { registerUserMiddleware, updateUserMiddleware, userAuthMiddleware, userL
 import { deleteUserDetails, getUserDetails, registerUser, updateUserDetails, userLogin } from '../controllers/user.controllers.js'
 import { addProduct, decreaseProduct, deleteAllProducts, deleteProduct, getAllCart, orderPlaced } from '../controllers/cart.controller.js'
 import { addProductWish, decreaseProductWish, deleteAllProductsWish, deleteProductWish, getAllWishlist } from '../controllers/wishlist.controllers.js'
+import { getAllProductByID, getAllProducts } from '../controllers/product.controllers.js'
 const userRoutes = express.Router()
 
 userRoutes.get('/', (req, res) => {
@@ -14,6 +15,10 @@ userRoutes.get('/', (req, res) => {
 
 userRoutes.post('/user/register', registerUserMiddleware, registerUser)
 userRoutes.post('/user/login', userLoginMiddleware, userLogin)
+
+userRoutes.get('/prod', getAllProducts)
+userRoutes.get('/prod/:id', getAllProductByID)
+
 
 userRoutes.use(userAuthMiddleware)
 

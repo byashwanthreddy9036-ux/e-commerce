@@ -99,6 +99,23 @@ export const getAllProducts = async (req, res) => {
     }
 }
 
+export const getAllProductByID = async (req, res) => {
+    try {
+        const {id} = req.params
+        const product = await Product.findOne(id)
+        return res.json({
+            success: true,
+            message: 'Product fetched successfully',
+            data: product
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+}
+
 export const getProductByID = async (req, res) => {
     try {
         const { id } = req.params
