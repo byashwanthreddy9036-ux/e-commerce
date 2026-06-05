@@ -6,6 +6,7 @@ const db = process.env.MONGO_URL
 
 if (!db) {
     console.error("MONGO_URL is not defined in environment variables");
+    process.exit(1); // Exit the application with an error code
 }
 
 const dbConnect = async () => {

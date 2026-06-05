@@ -1,15 +1,17 @@
 import express from 'express'
 import { addProduct, decreaseProduct, deleteAllProducts, deleteProduct, getAllCart, orderPlaced } from '../controllers/cart.controller.js'
+import { userAuthMiddleware } from '../middlewares/user.middleware.js'
 
 const cartRoutes = express.Router()
 
-cartRoutes.get('/cart', (req, res) => {
+cartRoutes.get('/health', (req, res) => {
     return res.json({
         success: true,
         message: 'Cart routes are working just fine'
     })
 })
 
+cartRoutes.use(userAuthMiddleware)
 cartRoutes.get('/', getAllCart)
 cartRoutes.post('/inc/:productId', addProduct)
 cartRoutes.put('/dec/:productId', decreaseProduct)

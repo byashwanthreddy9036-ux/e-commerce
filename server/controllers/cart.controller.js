@@ -140,9 +140,9 @@ export const deleteProduct = async (req, res) => {
     try {
         const userId = req.user._id;
 
-        const { productID } = req.params
+        const { productId } = req.params
 
-        if (!mongoose.Types.ObjectId.isValid(productID)) {
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
             return res.status(400).json({
                 success: false,
                 message: "Invalid product ID"
@@ -160,7 +160,7 @@ export const deleteProduct = async (req, res) => {
         }
 
         cart.items = cart.items.filter(
-            item => item.product.toString() !== productID
+            item => item.product.toString() !== productId
         );
 
         await cart.save();
@@ -226,7 +226,7 @@ export const orderPlaced = async (req, res) => {
                 message: "Cart not found"
             });
         }
-        const data = cart
+        const data = cart.toObject()
         cart.items = [];
         await cart.save();
 

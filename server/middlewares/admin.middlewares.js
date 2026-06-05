@@ -18,7 +18,7 @@ export const adminLoginMiddleware = async (req, res, next) => {
 
         const { email, password } = parsed.data
 
-        const existingAdmin = await Admin.findOne({ email })
+        const existingAdmin = await Admin.findOne({ email }).select('+password')
 
         if (!existingAdmin) {
             return res.status(401).json({

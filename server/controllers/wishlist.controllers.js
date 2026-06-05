@@ -7,39 +7,32 @@ export const addProductWish = async (req, res) => {
         const userId = req.user._id;
         const productId = req.params.id;
 
-        if (!mongoose.Types.ObjectId.isValid(productId))
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
             return res.status(400).json({
                 success: false,
                 message: "Invalid product ID"
             });
+        }
 
         const product = await Product.findById(productId);
-        if (!product)
+
+        if (!product) {
             return res.status(404).json({
                 success: false,
                 message: "Product not found"
             });
-
-        let wishlist = await Wishlist.findOne({ user: userId });
-
-        if (!wishlist) {
-            wishlist = new Wishlist({
-                user: userId,
-                products: [productId]
-            });
-        } else {
-            if (!wishlist.products.includes(productId)) {
-                const exists = wishlist.products.some(
-                    id => id.toString() === productId
-                );
-
-                if (!exists) {
-                    wishlist.products.push(productId);
-                }
-            }
         }
 
-        await wishlist.save();
+        const wishlist = await Wishlist.findOneAndUpdate(
+            { user: userId },
+            {
+                $addToSet: { products: productId }
+            },
+            {
+                new: true,
+                upsert: true
+            }
+        );
 
         return res.status(200).json({
             success: true,
@@ -59,9 +52,9 @@ export const addProductWish = async (req, res) => {
 export const deleteProductWish = async (req, res) => {
     try {
         const userId = req.user._id;
-        const { productID } = req.params;
+        const { productId } = req.params;
 
-        if (!mongoose.Types.ObjectId.isValid(productID)) {
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
             return res.status(400).json({
                 success: false,
                 message: "Invalid product ID"
@@ -80,7 +73,7 @@ export const deleteProductWish = async (req, res) => {
         const initialLength = wishlist.products.length;
 
         wishlist.products = wishlist.products.filter(
-            productId => productId.toString() !== productID
+            productId => productId.toString() !== productId
         );
 
         if (wishlist.products.length === initialLength) {

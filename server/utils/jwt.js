@@ -10,16 +10,21 @@ const getSecret = () => {
 
 
 export const generateJWT = (payload) => {
-    try {
-        return jwt.sign({ data: payload }, getSecret(), { expiresIn: '1d' });
-    } catch (error) {
-        console.error("JWT error:", error);
-        throw error;
-    }
+  try {
+    return jwt.sign({ data: payload }, getSecret(), { expiresIn: '1d' });
+  } catch (error) {
+    console.error("JWT error:", error);
+    throw error;
+  }
 };
 
 export const decodeJWT = (token) => {
-        const decoded = jwt.verify(token, getSecret())
-        return decoded.data
+  try {
+    const decoded = jwt.verify(token, getSecret())
+    return decoded.data
+  } catch (error) {
+    console.error("JWT error:", error);
+    throw error;
+  }
 }
 

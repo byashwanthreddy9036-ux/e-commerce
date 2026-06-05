@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 3000
 const server = express()
 
 server.use(cors({
-    origin: 'http://localhost:5200'
+    origin: 'http://localhost:5173'
 }));
 
 server.use(express.json())

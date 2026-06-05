@@ -149,6 +149,13 @@ export const userAuthMiddleware = async (req, res, next) => {
                 message: 'Auth failure'
             })
         }
+
+        if(user.status != 'active'){
+            return res.status(403).json({
+                success: false,
+                message: 'Account is not active'
+            })
+        }
         req.user = user
         next()
     } catch (error) {

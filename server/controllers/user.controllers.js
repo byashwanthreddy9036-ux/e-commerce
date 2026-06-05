@@ -10,11 +10,10 @@ export const registerUser = async (req, res) => {
   try {
     const userData = req.userData
 
-    const user = await User.create(userData)
 
     /*
       EMAIL VERIFICATION LINK
-    */
+      */
 
     const emailVerificationLink =
       `http://localhost:5200/verify/email` +
@@ -22,14 +21,14 @@ export const registerUser = async (req, res) => {
       `&token=${user.tokens.email}`
 
     /*
-      PHONE VERIFICATION TOKEN
+    PHONE VERIFICATION TOKEN
     */
 
     const phoneVerificationMessage =
       `Ecom Verification Code: ${user.tokens.phone}`
 
     /*
-      SEND EMAIL
+    SEND EMAIL
     */
 
     await sendEmail({
@@ -38,20 +37,17 @@ export const registerUser = async (req, res) => {
       subject: 'Verify Your Email',
 
       html: `
-        <h2>Hello ${user.fullname}</h2>
-
-        <p>
-          Click the link below to verify your email:
-        </p>
-
-        <a href="${emailVerificationLink}">
-          Verify Email
+      <h2>Hello ${escapeHtml(user.fullname)}</h2>      
+      <p>      Click the link below to verify your email:      </p>
+      
+      <a href="${emailVerificationLink}">
+      Verify Email
         </a>
       `,
     })
 
     /*
-      SEND SMS
+    SEND SMS
     */
 
     await sendSMS(
@@ -74,6 +70,12 @@ export const registerUser = async (req, res) => {
 
         phone: user.phone,
       },
+    })
+    const user = await User.create(userData)
+
+    return res.status(201).json({
+      success: true,
+      message: 'User created successfully'
     })
   } catch (error) {
     console.error(error)
@@ -149,7 +151,7 @@ export const updateUserDetails = async (req, res) => {
         new: true,
         runValidators: true,
       }
-    );
+    ).select("-password -tokens");
 
     if (!updatedUser) {
       return res.status(404).json({
@@ -191,11 +193,14 @@ export const deleteUserDetails = async (req, res) => {
         message: 'No user associate with id'
       })
     }
+    const safeUser = user.toObject();
+    delete safeUser.password;
+    delete safeUser.tokens;
 
     return res.json({
       success: true,
       message: 'User deleted successfully',
-      data: user
+      data: safeUser
     })
   } catch (error) {
 
