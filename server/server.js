@@ -10,7 +10,7 @@ import adminRoutes from './routes/admin.routes.js'
 import userRoutes from './routes/user.routes.js'
 import wishlistRoutes from './routes/wishlist.routes.js'
 import cartRoutes from './routes/cart.routes.js'
-import productRoutes from './routes/prouduct.routes.js'
+import productRoutes from './routes/product.routes.js'
 
 
 const PORT = process.env.PORT || 3000

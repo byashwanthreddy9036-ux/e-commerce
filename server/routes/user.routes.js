@@ -1,9 +1,6 @@
 import express from 'express'
 import { registerUserMiddleware, updateUserMiddleware, userAuthMiddleware, userLoginMiddleware } from '../middlewares/user.middleware.js'
 import { deleteUserDetails, getUserDetails, registerUser, updateUserDetails, userLogin } from '../controllers/user.controllers.js'
-import { addProduct, decreaseProduct, deleteAllProducts, deleteProduct, getAllCart, orderPlaced } from '../controllers/cart.controller.js'
-import { addProductWish, deleteAllProductsWish, deleteProductWish, getAllWishlist } from '../controllers/wishlist.controllers.js'
-import { getAllProductByID, getAllProducts } from '../controllers/product.controllers.js'
 const userRoutes = express.Router()
 
 userRoutes.get('/', (req, res) => {

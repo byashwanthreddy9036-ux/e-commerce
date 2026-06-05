@@ -25,11 +25,17 @@ export const addProductWish = async (req, res) => {
         if (!wishlist) {
             wishlist = new Wishlist({
                 user: userId,
-                product: [productId]
+                products: [productId]
             });
         } else {
             if (!wishlist.products.includes(productId)) {
-                wishlist.products.push(productId);
+                const exists = wishlist.products.some(
+                    id => id.toString() === productId
+                );
+
+                if (!exists) {
+                    wishlist.products.push(productId);
+                }
             }
         }
 
@@ -53,9 +59,9 @@ export const addProductWish = async (req, res) => {
 export const deleteProductWish = async (req, res) => {
     try {
         const userId = req.user._id;
-        const { id } = req.params;
+        const { productID } = req.params;
 
-        if (!mongoose.Types.ObjectId.isValid(id)) {
+        if (!mongoose.Types.ObjectId.isValid(productID)) {
             return res.status(400).json({
                 success: false,
                 message: "Invalid product ID"
@@ -74,7 +80,7 @@ export const deleteProductWish = async (req, res) => {
         const initialLength = wishlist.products.length;
 
         wishlist.products = wishlist.products.filter(
-            productId => productId.toString() !== id
+            productId => productId.toString() !== productID
         );
 
         if (wishlist.products.length === initialLength) {
@@ -143,7 +149,7 @@ export const getAllWishlist = async (req, res) => {
         if (!wishlist) {
             return res.status(404).json({
                 success: false,
-                message: "Wishlist not found or empty",
+                message: "Wishlist is empty",
                 data: []
             });
         }

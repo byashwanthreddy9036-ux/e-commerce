@@ -71,7 +71,7 @@ export const addProduct = async (req, res) => {
 export const decreaseProduct = async (req, res) => {
     try {
         const userId = req.user._id;
-        const { productId } = req.body;
+        const { productId } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(productId)) {
             return res.status(400).json({
@@ -140,9 +140,9 @@ export const deleteProduct = async (req, res) => {
     try {
         const userId = req.user._id;
 
-        const { id } = req.params
+        const { productID } = req.params
 
-        if (!mongoose.Types.ObjectId.isValid(id)) {
+        if (!mongoose.Types.ObjectId.isValid(productID)) {
             return res.status(400).json({
                 success: false,
                 message: "Invalid product ID"
@@ -160,7 +160,7 @@ export const deleteProduct = async (req, res) => {
         }
 
         cart.items = cart.items.filter(
-            item => item.product.toString() !== id
+            item => item.product.toString() !== productID
         );
 
         await cart.save();
@@ -256,7 +256,7 @@ export const getAllCart = async (req, res) => {
             return res.status(404).json({
                 success: false,
                 message: "Cart not found or empty",
-                data:[]
+                data: []
             });
         }
 

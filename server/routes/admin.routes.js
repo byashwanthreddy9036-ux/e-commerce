@@ -1,8 +1,6 @@
 import express from 'express'
-import { adminAuthMiddleware, adminLoginMiddleware } from '../middlewares/admin.middlewares.js'
+import { adminLoginMiddleware } from '../middlewares/admin.middlewares.js'
 import { adminLogin } from '../controllers/admin.controllers.js'
-import { createProductMiddleware, updateProductMiddleware } from '../middlewares/product.middlewares.js'
-import { createProduct, deleteProduct, getProductByID, getAllProducts, updateProduct, getAllProductByID } from '../controllers/product.controllers.js'
 
 const adminRoutes = express.Router()
 
