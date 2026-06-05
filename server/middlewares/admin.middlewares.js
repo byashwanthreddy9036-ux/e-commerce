@@ -39,6 +39,9 @@ export const adminLoginMiddleware = async (req, res, next) => {
                 message: 'Permission denied'
             })
         }
+
+        existingAdmin.password = undefined
+
         req.loginData = existingAdmin
         next()
     } catch (error) {

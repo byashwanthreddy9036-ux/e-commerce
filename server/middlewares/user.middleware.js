@@ -82,18 +82,8 @@ export const userLoginMiddleware = async (req, res, next) => {
                 message: 'Invalid credentials'
             })
         }
-        // console.log(user);
-        // console.log(password);
-        // console.log(user.password);
-        // console.log("USER PASSWORD FIELD:", user.password);
-        // console.log("COMPARE INPUTS:", {
-        //     password,
-        //     dbPassword: user.password
-        // });
 
-        // const match = await comparePassword(password, user.password);
         const isMatch = await comparePassword(password, user.password)
-        // console.log(isMatch);
 
         if (!(isMatch)) {
             return res.status(401).json({
@@ -125,47 +115,77 @@ export const userLoginMiddleware = async (req, res, next) => {
 
 }
 
+import jwt from "jsonwebtoken";
+import { decodeJWT } from "./jwt.js";
+import User from "./models/User.js";
+
 export const userAuthMiddleware = async (req, res, next) => {
     try {
-        const jwtToken = req.headers['auth-token']
+        const jwtToken = req.headers["auth-token"];
+
         if (!jwtToken) {
             return res.status(401).json({
                 success: false,
-                message: 'Jwt must be provided'
-            })
+                message: "Jwt must be provided",
+            });
         }
-        const userData = decodeJWT(jwtToken)
+
+        let userData;
+
+        // ✅ Handle JWT errors locally instead of going to 500
+        try {
+            userData = decodeJWT(jwtToken);
+        } catch (error) {
+            if (
+                error instanceof jwt.JsonWebTokenError ||
+                error instanceof jwt.TokenExpiredError ||
+                error instanceof jwt.NotBeforeError
+            ) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Invalid or expired token",
+                });
+            }
+
+            // unknown error = real server issue
+            return res.status(500).json({
+                success: false,
+                message: "Internal Server Error",
+            });
+        }
+
         if (!userData) {
             return res.status(401).json({
                 success: false,
-                message: 'Invalid or expired token'
-            })
+                message: "Invalid or expired token",
+            });
         }
-        const user = await User.findById(userData.id)
+
+        const user = await User.findById(userData.id);
 
         if (!user || user.role !== userData.role) {
             return res.status(401).json({
                 success: false,
-                message: 'Auth failure'
-            })
+                message: "Auth failure",
+            });
         }
 
-        if(user.status != 'active'){
+        if (user.status !== "active") {
             return res.status(403).json({
                 success: false,
-                message: 'Account is not active'
-            })
+                message: "Account is not active",
+            });
         }
-        req.user = user
-        next()
+
+        req.user = user;
+        next();
     } catch (error) {
         return res.status(500).json({
             success: false,
-            message: 'Internal Server Error'
-        })
+            message: "Internal Server Error",
+        });
     }
-}
-
+};
 export const updateUserMiddleware = async (req, res, next) => {
     try {
         const parsed = updateUserSchema.safeParse(req.body)

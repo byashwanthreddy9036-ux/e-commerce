@@ -73,7 +73,7 @@ export const deleteProductWish = async (req, res) => {
         const initialLength = wishlist.products.length;
 
         wishlist.products = wishlist.products.filter(
-            productId => productId.toString() !== productId
+            pId => pId.toString() !== productId
         );
 
         if (wishlist.products.length === initialLength) {

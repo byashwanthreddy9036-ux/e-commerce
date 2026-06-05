@@ -78,3 +78,36 @@ export const updateProductMiddleware = async (req, res, next) => {
     });
   }
 };
+
+export const mtcMiddleware = async (req, res, next) => {
+    try {
+        const { productId } = req.params
+
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Provide valid product ID",
+            });
+        }
+
+        const existingWish = await Wishlist.findOne({ user: req.user._id, 'items.product': productId });
+
+        if (!existingWish) {
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found in wishlist'
+            })
+        }
+
+        existingWish.items = existingWish.items.filter(item => item.product.toString() !== productId)
+        await existingWish.save()
+
+        req.params.id = productId
+        next()
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Internal Server Error'
+        })
+    }
+}

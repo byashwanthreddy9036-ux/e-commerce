@@ -1,5 +1,7 @@
+import Cart from '../models/Cart.js'
 import Product from '../models/Products.js'
 import mongoose from 'mongoose'
+import WishList from '../models/Wishlist.js'
 
 export const createProduct = async (req, res) => {
     try {
@@ -69,6 +71,15 @@ export const deleteProduct = async (req, res) => {
                 message: 'No product associated with the ID'
             })
         }
+        await Cart.updateMany(
+            {},
+            { $pull: { items: { productId } } }
+        );
+
+        await WishList.updateMany(
+            {},
+            { $pull: { products: productId } }
+        );
         return res.json({
             success: true,
             message: 'Product deleted successfully',
@@ -85,8 +96,18 @@ export const deleteProduct = async (req, res) => {
 
 export const getAllProducts = async (req, res) => {
     try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
+        const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+
+        const rawLimit = parseInt(req.query.limit, 10);
+        const DEFAULT_LIMIT = 10;
+        const MAX_LIMIT = 100;
+
+        let limit = DEFAULT_LIMIT;
+
+        if (!isNaN(rawLimit) && rawLimit > 0) {
+            limit = Math.min(rawLimit, MAX_LIMIT);
+        }
+
         const skip = (page - 1) * limit;
 
         const products = await Product.find()
@@ -106,6 +127,7 @@ export const getAllProducts = async (req, res) => {
                 pages: Math.ceil(total / limit)
             }
         });
+
     } catch (error) {
         return res.status(500).json({
             success: false,

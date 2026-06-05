@@ -3,8 +3,8 @@ import { generateJWT } from '../utils/jwt.js'
 import { sendEmail } from '../services/email.js'
 
 import { sendSMS } from '../services/phone.js'
-import token from '../utils/token.js'
 import mongoose from 'mongoose'
+import escapeHtml from 'escape-html'
 
 export const registerUser = async (req, res) => {
   try {
@@ -142,7 +142,7 @@ export const getUserDetails = async (req, res) => {
 
 export const updateUserDetails = async (req, res) => {
   try {
-    const { id, userData } = req;
+    const { userData } = req;
 
     const updatedUser = await User.findByIdAndUpdate(
       req.user._id,
@@ -184,7 +184,14 @@ export const deleteUserDetails = async (req, res) => {
         message: "Provide valid ID",
       });
     }
-
+    const cart = await Cart.findOne({ user: userId });
+    if (cart) {
+      await Cart.findByIdAndDelete(cart._id);
+    }
+    const wishlist = await Wishlist.findOne({ user: userId });
+    if (wishlist) {
+      await Wishlist.findByIdAndDelete(wishlist._id);
+    }
     const user = await User.findByIdAndDelete(id)
 
     if (!user) {
@@ -193,14 +200,16 @@ export const deleteUserDetails = async (req, res) => {
         message: 'No user associate with id'
       })
     }
-    const safeUser = user.toObject();
-    delete safeUser.password;
-    delete safeUser.tokens;
 
     return res.json({
       success: true,
       message: 'User deleted successfully',
-      data: safeUser
+      data: {
+        name: user.fullname,
+        email: user.email,
+        phone: user.phone,
+
+      }
     })
   } catch (error) {
 

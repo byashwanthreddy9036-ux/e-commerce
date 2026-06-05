@@ -104,6 +104,7 @@ export const decreaseProduct = async (req, res) => {
             const product = await Product.findById(productId);
             if (!product) {
                 cart.items.splice(itemIndex, 1);
+                await cart.save();
 
                 return res.json({
                     success: true,
@@ -220,10 +221,10 @@ export const orderPlaced = async (req, res) => {
 
         const cart = await Cart.findOne({ user: userId });
 
-        if (!cart) {
+        if (!cart || cart.items.length === 0) {
             return res.status(404).json({
                 success: false,
-                message: "Cart not found"
+                message: "Cart not found or empty"
             });
         }
         const data = cart.toObject()
