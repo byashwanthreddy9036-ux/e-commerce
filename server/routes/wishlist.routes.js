@@ -2,7 +2,7 @@ import express from 'express'
 import { addProduct } from '../controllers/cart.controller.js'
 import { addProductWish, deleteAllProductsWish, deleteProductWish, getAllWishlist } from '../controllers/wishlist.controllers.js'
 import { userAuthMiddleware } from '../middlewares/user.middleware.js'
-import { mtcMiddleware } from '../middlewares/mtc.middleware.js'
+import { mtcMiddleware } from '../middlewares/product.middlewares.js'
 
 const wishlistRoutes = express.Router()
 

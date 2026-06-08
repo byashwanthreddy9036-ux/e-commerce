@@ -115,10 +115,6 @@ export const userLoginMiddleware = async (req, res, next) => {
 
 }
 
-import jwt from "jsonwebtoken";
-import { decodeJWT } from "./jwt.js";
-import User from "./models/User.js";
-
 export const userAuthMiddleware = async (req, res, next) => {
     try {
         const jwtToken = req.headers["auth-token"];

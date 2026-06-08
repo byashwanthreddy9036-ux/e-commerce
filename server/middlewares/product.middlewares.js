@@ -1,5 +1,7 @@
 import Product from "../models/Products.js";
 import { createProductSchema, updateProductSchema } from "../validators/validators.product.js";
+import mongoose from "mongoose";
+import Wishlist from "../models/Wishlist.js";
 
 export const createProductMiddleware = async (req, res, next) => {
   try {
@@ -90,7 +92,7 @@ export const mtcMiddleware = async (req, res, next) => {
             });
         }
 
-        const existingWish = await Wishlist.findOne({ user: req.user._id, 'items.product': productId });
+        const existingWish = await Wishlist.findOne({ user: req.user._id, 'products': productId });
 
         if (!existingWish) {
             return res.status(404).json({
@@ -99,7 +101,7 @@ export const mtcMiddleware = async (req, res, next) => {
             })
         }
 
-        existingWish.items = existingWish.items.filter(item => item.product.toString() !== productId)
+        existingWish.products = existingWish.products.filter(id => id.toString() !== productId)
         await existingWish.save()
 
         req.params.id = productId
