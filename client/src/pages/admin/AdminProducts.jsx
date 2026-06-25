@@ -15,6 +15,7 @@ const AdminProducts = () => {
   const [formData, setformData] = useState(emptyForm)
   const [page, setpage] = useState(1)
   const [pagination, setpagination] = useState(null)
+  const [confirmDeleteId, setconfirmDeleteId] = useState(null)
 
   const fetchProducts = async (pageNum) => {
     setloading(true)
@@ -24,7 +25,7 @@ const AdminProducts = () => {
       setproducts(response.data.data)
       setpagination(response.data.pagination)
       setloading(false)
-    } catch (err) {
+    } catch {
       seterror('Failed to load products')
       setloading(false)
     }
@@ -33,7 +34,8 @@ const AdminProducts = () => {
   useEffect(() => { fetchProducts(page) }, [page])
 
   const onChangeHandler = (e) => {
-    setformData({ ...formData, [e.target.name]: e.target.value })
+    const { name, value } = e.target
+    setformData(prev => ({ ...prev, [name]: value }))
   }
 
   const openCreateForm = () => {
@@ -58,6 +60,12 @@ const AdminProducts = () => {
     setshowForm(true)
     seterror('')
     setsuccess('')
+  }
+
+  const cancelForm = () => {
+    setshowForm(false)
+    seteditId(null)
+    setformData(emptyForm)
   }
 
   const submitHandler = async (e) => {
@@ -91,9 +99,7 @@ const AdminProducts = () => {
         await api.post('/product/', createPayload)
         setsuccess('Product created')
       }
-      setshowForm(false)
-      seteditId(null)
-      setformData(emptyForm)
+      cancelForm()
       fetchProducts(page)
       setformloading(false)
     } catch (err) {
@@ -103,15 +109,16 @@ const AdminProducts = () => {
   }
 
   const deleteHandler = async (id) => {
-    if (!confirm('Delete this product?')) return
     seterror('')
     setsuccess('')
     try {
       await api.delete(`/product/${id}`)
       setsuccess('Product deleted')
+      setconfirmDeleteId(null)
       fetchProducts(page)
     } catch (err) {
       seterror(err.response?.data?.message || 'Failed to delete product')
+      setconfirmDeleteId(null)
     }
   }
 
@@ -131,25 +138,25 @@ const AdminProducts = () => {
         {showForm && (
           <div className='bg-white rounded-3xl shadow-xl p-8 mb-6'>
             <h3 className='text-xl font-bold text-gray-800 mb-6'>{editId ? 'Edit Product' : 'New Product'}</h3>
-            <form onChange={onChangeHandler} className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
               {!editId && (
-                <input type='text' name='name' placeholder='Product Name' value={formData.name} className='border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500' />
+                <input type='text' name='name' placeholder='Product Name' value={formData.name} onChange={onChangeHandler} className='border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500' />
               )}
-              <input type='text' name='category' placeholder='Category' value={formData.category} className='border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500' />
-              <input type='number' name='price' placeholder='Price' value={formData.price} className='border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500' />
-              <input type='number' name='stock' placeholder='Stock' value={formData.stock} className='border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500' />
-              <input type='text' name='brand' placeholder='Brand (optional)' value={formData.brand} className='border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500' />
-              <input type='url' name='image' placeholder='Image URL (optional)' value={formData.image} className='border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500' />
-              <textarea name='description' placeholder='Description' value={formData.description} rows={3} onChange={(e) => setformData({ ...formData, description: e.target.value })} className='md:col-span-2 border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none' />
+              <input type='text' name='category' placeholder='Category' value={formData.category} onChange={onChangeHandler} className='border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500' />
+              <input type='number' name='price' placeholder='Price' value={formData.price} onChange={onChangeHandler} className='border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500' />
+              <input type='number' name='stock' placeholder='Stock' value={formData.stock} onChange={onChangeHandler} className='border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500' />
+              <input type='text' name='brand' placeholder='Brand (optional)' value={formData.brand} onChange={onChangeHandler} className='border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500' />
+              <input type='url' name='image' placeholder='Image URL (optional)' value={formData.image} onChange={onChangeHandler} className='border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500' />
+              <textarea name='description' placeholder='Description' value={formData.description} rows={3} onChange={onChangeHandler} className='md:col-span-2 border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none' />
               <div className='md:col-span-2 flex gap-3'>
-                <button type='submit' onClick={submitHandler} disabled={formloading} className='flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white py-3 rounded-xl font-semibold transition'>
+                <button onClick={submitHandler} disabled={formloading} className='flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white py-3 rounded-xl font-semibold transition'>
                   {formloading ? 'Saving...' : editId ? 'Update Product' : 'Create Product'}
                 </button>
-                <button type='button' onClick={() => setshowForm(false)} className='flex-1 border border-gray-300 text-gray-600 hover:bg-gray-100 py-3 rounded-xl font-semibold transition'>
+                <button type='button' onClick={cancelForm} className='flex-1 border border-gray-300 text-gray-600 hover:bg-gray-100 py-3 rounded-xl font-semibold transition'>
                   Cancel
                 </button>
               </div>
-            </form>
+            </div>
           </div>
         )}
 
@@ -181,10 +188,18 @@ const AdminProducts = () => {
                       </span>
                     </td>
                     <td className='px-4 py-3'>
-                      <div className='flex gap-3'>
-                        <button onClick={() => openEditForm(product)} className='text-blue-600 hover:text-blue-800 text-sm font-medium transition'>Edit</button>
-                        <button onClick={() => deleteHandler(product._id)} className='text-red-500 hover:text-red-700 text-sm font-medium transition'>Delete</button>
-                      </div>
+                      {confirmDeleteId === product._id ? (
+                        <div className='flex items-center gap-2'>
+                          <span className='text-xs text-gray-500'>Sure?</span>
+                          <button onClick={() => deleteHandler(product._id)} className='text-xs text-red-600 hover:text-red-800 font-semibold transition'>Yes</button>
+                          <button onClick={() => setconfirmDeleteId(null)} className='text-xs text-gray-500 hover:text-gray-700 font-semibold transition'>No</button>
+                        </div>
+                      ) : (
+                        <div className='flex gap-3'>
+                          <button onClick={() => openEditForm(product)} className='text-blue-600 hover:text-blue-800 text-sm font-medium transition'>Edit</button>
+                          <button onClick={() => setconfirmDeleteId(product._id)} className='text-red-500 hover:text-red-700 text-sm font-medium transition'>Delete</button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}
