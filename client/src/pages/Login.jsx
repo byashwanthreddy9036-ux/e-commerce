@@ -11,7 +11,8 @@ const Login = () => {
   const [formData, setformData] = useState({ email: '', password: '' })
 
   const onChangeHandler = (e) => {
-    setformData({ ...formData, [e.target.name]: e.target.value })
+    const { name, value } = e.target
+    setformData(prev => ({ ...prev, [name]: value }))
   }
 
   const loginHandler = async (e) => {
@@ -50,6 +51,10 @@ const Login = () => {
         <p className='text-center text-gray-500 text-sm mt-4'>
           Don't have an account?{' '}
           <Link to='/register' className='text-blue-600 hover:text-blue-800 font-medium'>Register</Link>
+        </p>
+        <p className='text-center text-gray-400 text-xs mt-3'>
+          Admin?{' '}
+          <Link to='/admin/login' className='text-gray-500 hover:text-gray-700 font-medium'>Login here</Link>
         </p>
       </div>
     </div>

@@ -1,4 +1,6 @@
 import User from '../models/Users.js'
+import Cart from '../models/Cart.js'
+import WishList from '../models/Wishlist.js'
 import { generateJWT } from '../utils/jwt.js'
 import { sendEmail } from '../services/email.js'
 import { sendSMS } from '../services/phone.js'
@@ -8,79 +10,45 @@ export const registerUser = async (req, res) => {
   try {
     const userData = req.userData
 
-
-    /*
-      EMAIL VERIFICATION LINK
-      */
+    const user = await User.create(userData)
 
     const emailVerificationLink =
-      `http://localhost:5200/verify/email` +
+      `${process.env.CLIENT_URL || 'http://localhost:5173'}/verify/email` +
       `?user=${user._id}` +
       `&token=${user.tokens.email}`
 
-    /*
-    PHONE VERIFICATION TOKEN
-    */
+    const phoneVerificationMessage = `Ecom Verification Code: ${user.tokens.phone}`
 
-    const phoneVerificationMessage =
-      `Ecom Verification Code: ${user.tokens.phone}`
+    try {
+      await sendEmail({
+        to: user.email,
+        subject: 'Verify Your Email',
+        html: `<h2>Hello ${user.fullname}</h2><p>Click the link below to verify your email:</p><a href="${emailVerificationLink}">Verify Email</a>`,
+      })
+    } catch (emailErr) {
+      console.error('Failed to send verification email:', emailErr.message)
+    }
 
-    /*
-    SEND EMAIL
-    */
-
-    await sendEmail({
-      to: user.email,
-
-      subject: 'Verify Your Email',
-
-      html: `
-      <h2>Hello ${escapeHtml(user.fullname)}</h2>      
-      <p>      Click the link below to verify your email:      </p>
-      
-      <a href="${emailVerificationLink}">
-      Verify Email
-        </a>
-      `,
-    })
-
-    /*
-    SEND SMS
-    */
-
-    await sendSMS(
-      user.phone,
-      phoneVerificationMessage
-    )
+    try {
+      await sendSMS(user.phone, phoneVerificationMessage)
+    } catch (smsErr) {
+      console.error('Failed to send verification SMS:', smsErr.message)
+    }
 
     return res.status(201).json({
       success: true,
-
-      message:
-        'User registered. Verification email and SMS sent.',
-
+      message: 'User registered successfully',
       data: {
         _id: user._id,
-
         fullname: user.fullname,
-
         email: user.email,
-
         phone: user.phone,
       },
     })
-    const user = await User.create(userData)
-
-    return res.status(201).json({
-      success: true,
-      message: 'User created successfully'
-    })
   } catch (error) {
     console.error(error)
-
     return res.status(500).json({
       success: false,
-
       message: 'Internal Server Error',
     })
   }
@@ -117,14 +85,14 @@ export const userLogin = async (req, res) => {
 
 export const getUserDetails = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select('-tokens -verified');
+    const user = await User.findById(req.user._id).select('-tokens -verified')
     if (!user) {
       return res.status(404).json({
         success: false,
         message: 'No user found'
       })
     }
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: 'User fetched successfully',
       data: user
@@ -134,68 +102,62 @@ export const getUserDetails = async (req, res) => {
       success: false,
       message: 'Internal Server Error'
     })
-
   }
 }
 
 export const updateUserDetails = async (req, res) => {
   try {
-    const { userData } = req;
+    const { userData } = req
 
     const updatedUser = await User.findByIdAndUpdate(
       req.user._id,
       { $set: userData },
-      {
-        new: true,
-        runValidators: true,
-      }
-    ).select("-password -tokens");
+      { new: true, runValidators: true }
+    ).select('-password -tokens')
 
     if (!updatedUser) {
       return res.status(404).json({
         success: false,
-        message: "User not found",
-      });
+        message: 'User not found',
+      })
     }
 
     return res.status(200).json({
       success: true,
-      message: "User updated successfully",
+      message: 'User updated successfully',
       data: updatedUser,
-    });
-
+    })
   } catch (error) {
     return res.status(500).json({
       success: false,
       message: 'Internal Server Error'
     })
-
   }
 }
 
 export const deleteUserDetails = async (req, res) => {
   try {
     const id = req.user._id
+
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
-        message: "Provide valid ID",
-      });
+        message: 'Provide valid ID',
+      })
     }
-    const cart = await Cart.findOne({ user: userId });
-    if (cart) {
-      await Cart.findByIdAndDelete(cart._id);
-    }
-    const wishlist = await Wishlist.findOne({ user: userId });
-    if (wishlist) {
-      await Wishlist.findByIdAndDelete(wishlist._id);
-    }
+
+    const cart = await Cart.findOne({ user: id })
+    if (cart) await Cart.findByIdAndDelete(cart._id)
+
+    const wishlist = await WishList.findOne({ user: id })
+    if (wishlist) await WishList.findByIdAndDelete(wishlist._id)
+
     const user = await User.findByIdAndDelete(id)
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'No user associate with id'
+        message: 'No user associated with id'
       })
     }
 
@@ -206,11 +168,9 @@ export const deleteUserDetails = async (req, res) => {
         name: user.fullname,
         email: user.email,
         phone: user.phone,
-
       }
     })
   } catch (error) {
-
     return res.status(500).json({
       success: false,
       message: 'Internal Server Error'

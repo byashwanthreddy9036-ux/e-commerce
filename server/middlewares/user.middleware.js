@@ -128,22 +128,16 @@ export const userAuthMiddleware = async (req, res, next) => {
 
         let userData;
 
-        // ✅ Handle JWT errors locally instead of going to 500
         try {
             userData = decodeJWT(jwtToken);
         } catch (error) {
-            if (
-                error instanceof jwt.JsonWebTokenError ||
-                error instanceof jwt.TokenExpiredError ||
-                error instanceof jwt.NotBeforeError
-            ) {
+            const jwtErrors = ['JsonWebTokenError', 'TokenExpiredError', 'NotBeforeError']
+            if (jwtErrors.includes(error.name)) {
                 return res.status(401).json({
                     success: false,
                     message: "Invalid or expired token",
                 });
             }
-
-            // unknown error = real server issue
             return res.status(500).json({
                 success: false,
                 message: "Internal Server Error",

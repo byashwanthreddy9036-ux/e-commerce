@@ -11,7 +11,8 @@ const AdminLogin = () => {
   const [formData, setformData] = useState({ email: '', password: '' })
 
   const onChangeHandler = (e) => {
-    setformData({ ...formData, [e.target.name]: e.target.value })
+    const { name, value } = e.target
+    setformData(prev => ({ ...prev, [name]: value }))
   }
 
   const loginHandler = async (e) => {

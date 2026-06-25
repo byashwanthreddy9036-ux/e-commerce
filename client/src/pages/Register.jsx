@@ -14,7 +14,8 @@ const Register = () => {
   })
 
   const onChangeHandler = (e) => {
-    setformData({ ...formData, [e.target.name]: e.target.value })
+    const { name, value } = e.target
+    setformData(prev => ({ ...prev, [name]: value }))
   }
 
   const registerHandler = async (e) => {
