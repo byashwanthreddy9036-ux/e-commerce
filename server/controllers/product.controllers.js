@@ -73,12 +73,12 @@ export const deleteProduct = async (req, res) => {
         }
         await Cart.updateMany(
             {},
-            { $pull: { items: { productId } } }
+            { $pull: { items: { product: id } } }
         );
 
         await WishList.updateMany(
             {},
-            { $pull: { products: productId } }
+            { $pull: { products: id } }
         );
         return res.json({
             success: true,

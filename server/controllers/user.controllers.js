@@ -1,10 +1,8 @@
 import User from '../models/Users.js'
 import { generateJWT } from '../utils/jwt.js'
 import { sendEmail } from '../services/email.js'
-
 import { sendSMS } from '../services/phone.js'
 import mongoose from 'mongoose'
-import escapeHtml from 'escape-html'
 
 export const registerUser = async (req, res) => {
   try {
