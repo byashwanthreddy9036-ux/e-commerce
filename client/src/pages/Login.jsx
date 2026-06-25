@@ -6,11 +6,12 @@ import { useAuth } from '../context/AuthContext'
 const Login = () => {
   const navigate = useNavigate()
   const { login, user } = useAuth()
-
-  if (user) return <Navigate to='/' />
   const [loading, setloading] = useState(false)
   const [error, seterror] = useState('')
   const [formData, setformData] = useState({ email: '', password: '' })
+
+  // hooks must all be called before any early return
+  if (user) return <Navigate to={user.role === 'admin' ? '/admin/products' : '/'} />
 
   const onChangeHandler = (e) => {
     const { name, value } = e.target
@@ -22,12 +23,20 @@ const Login = () => {
     setloading(true)
     seterror('')
     try {
-      const response = await api.post('/user/login', formData)
-      login(response.data.data.user, response.data.data.token)
+      // try user login first
+      const res = await api.post('/user/login', formData)
+      login(res.data.data.user, res.data.data.token)
       navigate('/')
-    } catch (err) {
-      seterror(err.response?.data?.message || 'Something went wrong')
-      setloading(false)
+    } catch {
+      // fall back to admin login with the same credentials
+      try {
+        const res = await api.post('/admin/login', formData)
+        login(res.data.data.admin, res.data.data.token)
+        navigate('/admin/products')
+      } catch (adminErr) {
+        seterror(adminErr.response?.data?.message || 'Invalid credentials')
+        setloading(false)
+      }
     }
   }
 
@@ -53,10 +62,6 @@ const Login = () => {
         <p className='text-center text-gray-500 text-sm mt-4'>
           Don't have an account?{' '}
           <Link to='/register' className='text-blue-600 hover:text-blue-800 font-medium'>Register</Link>
-        </p>
-        <p className='text-center text-gray-400 text-xs mt-3'>
-          Admin?{' '}
-          <Link to='/admin/login' className='text-gray-500 hover:text-gray-700 font-medium'>Login here</Link>
         </p>
       </div>
     </div>
