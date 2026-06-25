@@ -27,7 +27,12 @@ const Navbar = () => {
               {user.role === 'admin' && (
                 <Link to='/admin/products' className='text-gray-600 hover:text-blue-600 transition text-sm'>Products</Link>
               )}
-              <Link to='/profile' className='text-gray-600 hover:text-blue-600 transition text-sm font-medium'>{user.fullname}</Link>
+              {user.role !== 'admin' && (
+                <Link to='/profile' className='text-gray-600 hover:text-blue-600 transition text-sm font-medium'>{user.fullname}</Link>
+              )}
+              {user.role === 'admin' && (
+                <span className='text-gray-500 text-sm'>{user.fullname}</span>
+              )}
               <button onClick={logoutHandler} className='bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition'>
                 Logout
               </button>

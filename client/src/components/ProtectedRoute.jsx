@@ -15,6 +15,7 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
 
   if (!effectiveUser) return <Navigate to='/login' />
   if (adminOnly && effectiveUser.role !== 'admin') return <Navigate to='/' />
+  if (!adminOnly && effectiveUser.role === 'admin') return <Navigate to='/admin/products' />
   return children
 }
 
