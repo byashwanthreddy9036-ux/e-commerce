@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../api/axios'
 import { useAuth } from '../context/AuthContext'
@@ -5,13 +6,21 @@ import { useAuth } from '../context/AuthContext'
 const ProductCard = ({ product }) => {
   const navigate = useNavigate()
   const { user } = useAuth()
+  const [cartMsg, setcartMsg] = useState('')
+  const [wishMsg, setwishMsg] = useState('')
+
+  const flashMsg = (setter, msg, isError = false) => {
+    setter(isError ? `✗ ${msg}` : `✓ ${msg}`)
+    setTimeout(() => setter(''), 2000)
+  }
 
   const addToCartHandler = async () => {
     if (!user) { navigate('/login'); return }
     try {
       await api.post(`/cart/inc/${product._id}`)
+      flashMsg(setcartMsg, 'Added!')
     } catch (err) {
-      console.error(err.response?.data?.message || 'Failed to add to cart')
+      flashMsg(setcartMsg, err.response?.data?.message || 'Failed', true)
     }
   }
 
@@ -19,8 +28,9 @@ const ProductCard = ({ product }) => {
     if (!user) { navigate('/login'); return }
     try {
       await api.post(`/wishlist/${product._id}`)
+      flashMsg(setwishMsg, 'Saved!')
     } catch (err) {
-      console.error(err.response?.data?.message || 'Failed to add to wishlist')
+      flashMsg(setwishMsg, err.response?.data?.message || 'Failed', true)
     }
   }
 
@@ -45,13 +55,15 @@ const ProductCard = ({ product }) => {
         </div>
       </div>
       {user?.role !== 'admin' && (
-        <div className='flex gap-2'>
-          <button onClick={addToCartHandler} disabled={product.stock < 1} className='flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white py-2 rounded-xl text-sm font-medium transition'>
-            Add to Cart
-          </button>
-          <button onClick={addToWishlistHandler} className='flex-1 border border-blue-600 text-blue-600 hover:bg-blue-50 py-2 rounded-xl text-sm font-medium transition'>
-            Wishlist
-          </button>
+        <div className='flex flex-col gap-1'>
+          <div className='flex gap-2'>
+            <button onClick={addToCartHandler} disabled={product.stock < 1} className='flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white py-2 rounded-xl text-sm font-medium transition'>
+              {cartMsg || 'Add to Cart'}
+            </button>
+            <button onClick={addToWishlistHandler} className='flex-1 border border-blue-600 text-blue-600 hover:bg-blue-50 py-2 rounded-xl text-sm font-medium transition'>
+              {wishMsg || 'Wishlist'}
+            </button>
+          </div>
         </div>
       )}
     </div>
