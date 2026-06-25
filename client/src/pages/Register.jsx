@@ -6,6 +6,7 @@ const Register = () => {
   const navigate = useNavigate()
   const [loading, setloading] = useState(false)
   const [error, seterror] = useState('')
+  const [fieldErrors, setfieldErrors] = useState({})
   const [formData, setformData] = useState({
     fullname: '',
     email: '',
@@ -16,17 +17,25 @@ const Register = () => {
   const onChangeHandler = (e) => {
     const { name, value } = e.target
     setformData(prev => ({ ...prev, [name]: value }))
+    if (fieldErrors[name]) setfieldErrors(prev => ({ ...prev, [name]: null }))
   }
 
   const registerHandler = async (e) => {
     e.preventDefault()
     setloading(true)
     seterror('')
+    setfieldErrors({})
     try {
       await api.post('/user/register', formData)
       navigate('/login')
     } catch (err) {
-      seterror(err.response?.data?.message || 'Something went wrong')
+      const data = err.response?.data
+      if (data?.errors) {
+        setfieldErrors(data.errors)
+        seterror('Please fix the errors below')
+      } else {
+        seterror(data?.message || 'Something went wrong')
+      }
       setloading(false)
     }
   }
@@ -44,10 +53,23 @@ const Register = () => {
           </div>
         )}
         <form onChange={onChangeHandler} className='space-y-4'>
-          <input type='text' name='fullname' placeholder='Full Name' className='w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500' />
-          <input type='email' name='email' placeholder='Email' className='w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500' />
-          <input type='tel' name='phone' placeholder='Phone (+919876543210)' className='w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500' />
-          <input type='password' name='password' placeholder='Password' className='w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500' />
+          <div>
+            <input type='text' name='fullname' placeholder='Full Name' className='w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500' />
+            {fieldErrors.fullname && <p className='text-red-500 text-xs mt-1 ml-1'>{fieldErrors.fullname[0]}</p>}
+          </div>
+          <div>
+            <input type='email' name='email' placeholder='Email' className='w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500' />
+            {fieldErrors.email && <p className='text-red-500 text-xs mt-1 ml-1'>{fieldErrors.email[0]}</p>}
+          </div>
+          <div>
+            <input type='tel' name='phone' placeholder='Phone' className='w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500' />
+            <p className='text-gray-400 text-xs mt-1 ml-1'>Include country code, e.g. +919876543210</p>
+            {fieldErrors.phone && <p className='text-red-500 text-xs mt-1 ml-1'>{fieldErrors.phone[0]}</p>}
+          </div>
+          <div>
+            <input type='password' name='password' placeholder='Password (min 6 characters)' className='w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500' />
+            {fieldErrors.password && <p className='text-red-500 text-xs mt-1 ml-1'>{fieldErrors.password[0]}</p>}
+          </div>
           <button type='submit' onClick={registerHandler} disabled={loading} className='w-full bg-blue-600 hover:bg-blue-700 transition text-white py-3 rounded-xl font-semibold disabled:opacity-50'>
             {loading ? 'Registering...' : 'Register'}
           </button>
