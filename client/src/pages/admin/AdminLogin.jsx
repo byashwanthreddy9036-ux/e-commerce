@@ -1,11 +1,13 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Navigate } from 'react-router-dom'
 import api from '../../api/axios'
 import { useAuth } from '../../context/AuthContext'
 
 const AdminLogin = () => {
   const navigate = useNavigate()
-  const { login } = useAuth()
+  const { login, user } = useAuth()
+
+  if (user) return <Navigate to='/admin/products' />
   const [loading, setloading] = useState(false)
   const [error, seterror] = useState('')
   const [formData, setformData] = useState({ email: '', password: '' })

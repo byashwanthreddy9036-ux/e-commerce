@@ -3,8 +3,18 @@ import { useAuth } from '../context/AuthContext'
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
   const { user } = useAuth()
-  if (!user) return <Navigate to='/login' />
-  if (adminOnly && user.role !== 'admin') return <Navigate to='/' />
+
+  // React state may not have flushed yet right after login(); fall back to
+  // localStorage so the first render after navigate() still sees the user.
+  const effectiveUser = user ?? (() => {
+    try {
+      const stored = localStorage.getItem('user')
+      return stored ? JSON.parse(stored) : null
+    } catch { return null }
+  })()
+
+  if (!effectiveUser) return <Navigate to='/login' />
+  if (adminOnly && effectiveUser.role !== 'admin') return <Navigate to='/' />
   return children
 }
 
