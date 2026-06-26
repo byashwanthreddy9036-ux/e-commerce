@@ -8,13 +8,6 @@ export const createProductSchema = z.object({
   stock: z.number().min(0, "Stock cannot be negative"),
   image: z.string().url("Invalid image URL").optional(),
   brand: z.string().optional(),
-  // image: z
-  //     .object({
-  //         mimetype: z.string(),
-  //         size: z.number(),
-  //         originalname: z.string(),
-  //     })
-  //     .optional(),
 });
 
 

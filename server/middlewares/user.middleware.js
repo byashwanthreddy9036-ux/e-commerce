@@ -47,12 +47,8 @@ export const registerUserMiddleware = async (req, res, next) => {
 
         req.userData = newUser
         next()
-        // console.log("i was here");
     } catch (error) {
-        console.error(error);
-        // console.log('error');
-        // console.error(error.message);
-
+        console.error(error)
         return res.status(500).json({
             success: false,
             message: 'Internal Server Error'
@@ -187,10 +183,7 @@ export const updateUserMiddleware = async (req, res, next) => {
             });
         }
 
-        const { id, ...updateUser } = parsed.data;
-
-        req.id = parsed.data.id;
-        req.userData = updateUser;
+        req.userData = parsed.data;
 
         next();
 

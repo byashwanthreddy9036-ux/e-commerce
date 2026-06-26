@@ -69,7 +69,7 @@ export const updateProductMiddleware = async (req, res, next) => {
 
     const { id, ...updateData } = parsed.data;
 
-    req.id = parsed.data.id;
+    req.id = id;
     req.prodData = updateData;
 
     next();
